@@ -1,0 +1,1 @@
+<img src="{{ asset('images/logo-kemenhut.png') }}" alt="Logo Kementerian Kehutanan" {{ $attributes }}>
