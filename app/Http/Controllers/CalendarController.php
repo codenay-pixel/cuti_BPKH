@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LeaveRequest;
+use App\Models\OfficeEvent;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -13,42 +14,83 @@ class CalendarController extends Controller
         $bulan = (int) $request->get('bulan', now()->month);
         $tahun = (int) $request->get('tahun', now()->year);
 
-        $awalBulan = Carbon::create($tahun, $bulan, 1)->startOfMonth();
-        $akhirBulan = Carbon::create($tahun, $bulan, 1)->endOfMonth();
+        if ($bulan < 1 || $bulan > 12) {
+            $bulan = now()->month;
+        }
 
-        // Ambil semua cuti yang disetujui dan overlap dengan bulan ini
-        $cutiBulanIni = LeaveRequest::with(['user', 'leaveType'])
+        $awalBulan  = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $akhirBulan = $awalBulan->copy()->endOfMonth();
+
+        // Ambil rentang penuh yang tampil di grid (termasuk sisa bulan sebelah),
+        // supaya tanggal di baris pertama dan terakhir juga bisa diklik.
+        $awalGrid  = $awalBulan->copy()->startOfWeek(Carbon::SUNDAY);
+        $akhirGrid = $akhirBulan->copy()->endOfWeek(Carbon::SATURDAY);
+
+        $agenda = [];
+
+        $cuti = LeaveRequest::with(['user', 'leaveType'])
             ->where('status', 'disetujui')
-            ->where('tanggal_mulai', '<=', $akhirBulan)
-            ->where('tanggal_selesai', '>=', $awalBulan)
+            ->whereDate('tanggal_mulai', '<=', $akhirGrid)
+            ->whereDate('tanggal_selesai', '>=', $awalGrid)
             ->get();
 
-        // Kelompokkan per tanggal untuk ditampilkan di kalender
-        $cutiPerTanggal = [];
-        foreach ($cutiBulanIni as $cuti) {
-            $periode = Carbon::parse($cuti->tanggal_mulai)->daysUntil($cuti->tanggal_selesai);
-            foreach ($periode as $tanggal) {
-                if ($tanggal->between($awalBulan, $akhirBulan)) {
-                    $key = $tanggal->format('Y-m-d');
-                    $cutiPerTanggal[$key][] = $cuti;
+        foreach ($cuti as $c) {
+            foreach (Carbon::parse($c->tanggal_mulai)->daysUntil($c->tanggal_selesai) as $t) {
+                if (! $t->betweenIncluded($awalGrid, $akhirGrid)) {
+                    continue;
                 }
+
+                $agenda[$t->format('Y-m-d')][] = [
+                    'tipe'     => 'cuti',
+                    'nama'     => $c->user->name,
+                    'judul'    => $c->leaveType->nama_cuti,
+                    'ket'      => 'Cuti ' . $c->tanggal_mulai->translatedFormat('d M')
+                                  . ' s/d ' . $c->tanggal_selesai->translatedFormat('d M Y'),
+                    'lampiran' => null,
+                ];
             }
         }
 
-        // Yang sedang cuti hari ini
-        $sedangCutiHariIni = LeaveRequest::with(['user', 'leaveType'])
-            ->where('status', 'disetujui')
-            ->where('tanggal_mulai', '<=', now())
-            ->where('tanggal_selesai', '>=', now())
+        $acara = OfficeEvent::with('user')
+            ->whereDate('tanggal_mulai', '<=', $akhirGrid)
+            ->whereDate('tanggal_selesai', '>=', $awalGrid)
+            ->get();
+
+        foreach ($acara as $a) {
+            foreach (Carbon::parse($a->tanggal_mulai)->daysUntil($a->tanggal_selesai) as $t) {
+                if (! $t->betweenIncluded($awalGrid, $akhirGrid)) {
+                    continue;
+                }
+
+                $agenda[$t->format('Y-m-d')][] = [
+                    'tipe'     => 'acara',
+                    'nama'     => $a->user->name,
+                    'judul'    => $a->nama_acara,
+                    'ket'      => trim(($a->lokasi ? $a->lokasi . ' · ' : '') . $a->jenis_label
+                                  . ' · ' . $a->tanggal_mulai->translatedFormat('d M')
+                                  . ' s/d ' . $a->tanggal_selesai->translatedFormat('d M Y')),
+                    'lampiran' => $a->lampiran ? asset('storage/' . $a->lampiran) : null,
+                ];
+            }
+        }
+
+        ksort($agenda);
+
+        // Tanggal yang dipilih saat halaman dibuka: hari ini bila bulan yang
+        // ditampilkan adalah bulan berjalan, selain itu tanggal 1.
+        $tanggalAwal = $awalBulan->isSameMonth(now())
+            ? now()->format('Y-m-d')
+            : $awalBulan->format('Y-m-d');
+
+        $acaraMendatang = OfficeEvent::with('user')
+            ->whereDate('tanggal_selesai', '>=', now())
+            ->orderBy('tanggal_mulai')
+            ->limit(10)
             ->get();
 
         return view('calendar.index', compact(
-            'awalBulan',
-            'akhirBulan',
-            'cutiPerTanggal',
-            'sedangCutiHariIni',
-            'bulan',
-            'tahun'
+            'awalBulan', 'akhirBulan', 'awalGrid', 'akhirGrid',
+            'agenda', 'tanggalAwal', 'acaraMendatang', 'bulan', 'tahun'
         ));
     }
 }

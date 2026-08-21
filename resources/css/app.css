@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Menyembunyikan elemen Alpine sampai Alpine siap, supaya blok yang
+   seharusnya tersembunyi tidak berkedip muncul saat halaman dimuat. */
+[x-cloak] { display: none !important; }

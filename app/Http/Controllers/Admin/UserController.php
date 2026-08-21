@@ -6,20 +6,48 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('atasan')->latest()->paginate(10);
+        $query = User::with('atasan')->orderBy('name');
+
+        if ($request->filled('cari')) {
+            $cari = trim($request->cari);
+
+            // NIP sering ditulis berspasi (19900303 201001 2 003). Angkanya
+            // dipisahkan supaya pencarian tetap ketemu walau formatnya berbeda.
+            $angka = preg_replace('/[^0-9]/', '', $cari);
+
+            $query->where(function ($q) use ($cari, $angka) {
+                $q->where('name', 'like', "%{$cari}%")
+                  ->orWhere('jabatan', 'like', "%{$cari}%")
+                  ->orWhere('unit_kerja', 'like', "%{$cari}%")
+                  ->orWhere('nip', 'like', "%{$cari}%");
+
+                if ($angka !== '') {
+                    $q->orWhere('nip', 'like', "%{$angka}%");
+                }
+            });
+        }
+
+        if ($request->filled('peran')) {
+            $query->where('role', $request->peran);
+        }
+
+        $users = $query->paginate(15)->withQueryString();
 
         return view('admin.users.index', compact('users'));
     }
 
     public function create()
     {
-        $atasanList = User::where('role', 'atasan_langsung')->get();
+        $atasanList = User::whereIn('role', ['atasan_langsung', 'atasan'])->orderBy('name')->get();
 
         return view('admin.users.create', compact('atasanList'));
     }
@@ -29,14 +57,19 @@ class UserController extends Controller
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
 
-        User::create($data);
+        unset($data['tanda_tangan'], $data['hapus_tanda_tangan']);
+
+        $user = User::create($data);
+
+        $this->simpanTandaTangan($user, $request->file('tanda_tangan'), false);
 
         return redirect()->route('admin.users.index')->with('success', 'Pegawai berhasil ditambahkan.');
     }
 
     public function edit(User $user)
     {
-        $atasanList = User::where('role', 'atasan_langsung')->where('id', '!=', $user->id)->get();
+        $atasanList = User::whereIn('role', ['atasan_langsung', 'atasan'])
+            ->where('id', '!=', $user->id)->orderBy('name')->get();
 
         return view('admin.users.edit', compact('user', 'atasanList'));
     }
@@ -51,14 +84,47 @@ class UserController extends Controller
             unset($data['password']);
         }
 
+        unset($data['tanda_tangan'], $data['hapus_tanda_tangan']);
+
         $user->update($data);
 
+        $this->simpanTandaTangan(
+            $user,
+            $request->file('tanda_tangan'),
+            $request->boolean('hapus_tanda_tangan')
+        );
+
         return redirect()->route('admin.users.index')->with('success', 'Data pegawai berhasil diperbarui.');
+    }
+
+    /**
+     * Simpan / ganti / hapus gambar tanda tangan pejabat.
+     * Berkas lama selalu dibuang supaya folder tidak menumpuk file yatim.
+     */
+    protected function simpanTandaTangan(User $user, ?UploadedFile $berkas, bool $hapus): void
+    {
+        if (! $berkas && ! $hapus) {
+            return;
+        }
+
+        if ($user->tanda_tangan) {
+            Storage::disk('public')->delete($user->tanda_tangan);
+        }
+
+        $path = $berkas
+            ? $berkas->store('tanda-tangan', 'public')
+            : null;
+
+        $user->forceFill(['tanda_tangan' => $path])->save();
     }
 
     public function destroy(User $user)
     {
         abort_if($user->id === auth()->id(), 403, 'Tidak bisa menghapus akun sendiri.');
+
+        if ($user->tanda_tangan) {
+            Storage::disk('public')->delete($user->tanda_tangan);
+        }
 
         $user->delete();
 

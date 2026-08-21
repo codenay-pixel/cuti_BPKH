@@ -37,13 +37,14 @@ class LeaveReportExport implements FromCollection, WithHeadings, WithMapping
 
     public function headings(): array
     {
-        return ['Nama Pegawai', 'Jenis Cuti', 'Tanggal Mulai', 'Tanggal Selesai', 'Jumlah Hari', 'Alasan', 'Status'];
+        return ['Nama Pegawai', 'NIP', 'Jenis Cuti', 'Tanggal Mulai', 'Tanggal Selesai', 'Jumlah Hari', 'Alasan', 'Status'];
     }
 
     public function map($leaveRequest): array
     {
         return [
             $leaveRequest->user->name,
+            (string) $leaveRequest->user->nip,
             $leaveRequest->leaveType->nama_cuti,
             $leaveRequest->tanggal_mulai->format('d-m-Y'),
             $leaveRequest->tanggal_selesai->format('d-m-Y'),

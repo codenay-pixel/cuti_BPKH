@@ -13,12 +13,13 @@
 </head>
 <body>
     <h2>Rekap Pengajuan Cuti Pegawai</h2>
-    <p>Dicetak pada: {{ now()->format('d F Y H:i') }}</p>
+    <p>Dicetak pada: {{ now()->translatedFormat('d F Y H:i') }}</p>
 
     <table>
         <thead>
             <tr>
                 <th>Nama Pegawai</th>
+                <th>NIP</th>
                 <th>Jenis Cuti</th>
                 <th>Tanggal Mulai</th>
                 <th>Tanggal Selesai</th>
@@ -30,6 +31,7 @@
             @foreach ($riwayat as $item)
                 <tr>
                     <td>{{ $item->user->name }}</td>
+                    <td>{{ $item->user->nip }}</td>
                     <td>{{ $item->leaveType->nama_cuti }}</td>
                     <td>{{ $item->tanggal_mulai->format('d-m-Y') }}</td>
                     <td>{{ $item->tanggal_selesai->format('d-m-Y') }}</td>

@@ -7,10 +7,41 @@ use App\Http\Controllers\Controller;
 use App\Models\LeaveRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use App\Services\LeaveService;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class LeaveReportController extends Controller
 {
+    public function __construct(protected LeaveService $leaveService)
+    {
+    }
+
+    /**
+     * Hapus satu pengajuan cuti beserta jejak persetujuan dan lampirannya.
+     * Bila pengajuan sudah disetujui, saldo cuti tahunan yang terpotong
+     * dikembalikan lebih dulu agar hitungannya tidak melenceng.
+     */
+    public function destroy(LeaveRequest $leaveRequest)
+    {
+        $nama = $leaveRequest->user->name;
+        $dikembalikan = $this->leaveService->kembalikanSaldo($leaveRequest);
+
+        if ($leaveRequest->lampiran) {
+            Storage::disk('public')->delete($leaveRequest->lampiran);
+        }
+
+        $leaveRequest->delete();
+
+        $pesan = 'Pengajuan cuti ' . $nama . ' berhasil dihapus.';
+
+        if ($dikembalikan > 0) {
+            $pesan .= ' Saldo cuti tahunan dikembalikan ' . $dikembalikan . ' hari.';
+        }
+
+        return back()->with('success', $pesan);
+    }
+
     public function index(Request $request)
     {
         $query = LeaveRequest::with(['user', 'leaveType'])->latest();

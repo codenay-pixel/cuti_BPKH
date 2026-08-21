@@ -14,34 +14,44 @@ class ApprovalController extends Controller
     {
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $pengajuan = LeaveRequest::where('current_approver_id', auth()->id())
-            ->where('status', 'disetujui_atasan')
-            ->with(['user', 'leaveType'])
+        // Termasuk status 'menunggu' agar pengajuan dari Atasan Langsung
+        // (yang atasannya langsung Kepala Balai) tidak tersangkut.
+        $pengajuan = LeaveRequest::where('current_approver_id', $request->user()->id)
+            ->whereIn('status', ['menunggu', 'disetujui_atasan'])
+            ->with(['user', 'leaveType', 'approvals.approver'])
             ->latest()
             ->get();
 
-        return view('kepala-balai.approval.index', compact('pengajuan'));
+        $riwayat = LeaveRequest::whereHas('approvals', fn ($q) => $q->where('approver_id', $request->user()->id))
+            ->with(['user', 'leaveType', 'approvals.approver'])
+            ->latest()
+            ->limit(20)
+            ->get();
+
+        return view('kepala-balai.approval.index', compact('pengajuan', 'riwayat'));
     }
 
     public function approve(Request $request, LeaveRequest $leaveRequest)
     {
-        abort_if($leaveRequest->current_approver_id !== auth()->id(), 403);
+        abort_if($leaveRequest->current_approver_id !== $request->user()->id, 403);
 
         try {
             $this->leaveService->setujuiCutiFinal($leaveRequest);
 
             LeaveApproval::create([
                 'leave_request_id' => $leaveRequest->id,
-                'approver_id' => auth()->id(),
-                'level' => 'kepala_balai',
-                'keputusan' => 'disetujui',
-                'catatan' => $request->catatan,
+                'approver_id'      => $request->user()->id,
+                'level'            => 'kepala_balai',
+                'keputusan'        => 'disetujui',
+                'catatan'          => $request->catatan,
                 'tanggal_keputusan' => now(),
             ]);
 
-            return back()->with('success', 'Cuti disetujui final.');
+            $leaveRequest->update(['current_approver_id' => null]);
+
+            return back()->with('success', 'Cuti disetujui. Formulir sudah dapat dicetak oleh pegawai.');
         } catch (\Exception $e) {
             return back()->withErrors(['saldo' => $e->getMessage()]);
         }
@@ -49,21 +59,24 @@ class ApprovalController extends Controller
 
     public function reject(Request $request, LeaveRequest $leaveRequest)
     {
-        abort_if($leaveRequest->current_approver_id !== auth()->id(), 403);
+        abort_if($leaveRequest->current_approver_id !== $request->user()->id, 403);
 
-        $request->validate(['catatan' => 'required|string']);
+        $request->validate(
+            ['catatan' => 'required|string|max:500'],
+            ['catatan.required' => 'Alasan penolakan wajib diisi.']
+        );
 
         LeaveApproval::create([
             'leave_request_id' => $leaveRequest->id,
-            'approver_id' => auth()->id(),
-            'level' => 'kepala_balai',
-            'keputusan' => 'ditolak',
-            'catatan' => $request->catatan,
+            'approver_id'      => $request->user()->id,
+            'level'            => 'kepala_balai',
+            'keputusan'        => 'ditolak',
+            'catatan'          => $request->catatan,
             'tanggal_keputusan' => now(),
         ]);
 
-        $leaveRequest->update(['status' => 'ditolak']);
+        $leaveRequest->update(['status' => 'ditolak', 'current_approver_id' => null]);
 
-        return back()->with('success', 'Cuti ditolak.');
+        return back()->with('success', 'Pengajuan cuti ditolak.');
     }
 }

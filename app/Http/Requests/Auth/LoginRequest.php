@@ -12,41 +12,68 @@ use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Login memakai NIP (Nomor Induk Pegawai) + password.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'nip' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
 
+    public function attributes(): array
+    {
+        return [
+            'nip' => 'NIP',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nip.required' => 'NIP wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+        ];
+    }
+
     /**
-     * Attempt to authenticate the request's credentials.
-     *
+     * Normalisasi NIP: buang spasi, titik, dan strip sebelum dicocokkan.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('nip')) {
+            $this->merge([
+                'nip' => preg_replace('/[^0-9]/', '', (string) $this->input('nip')),
+            ]);
+        }
+    }
+
+    /**
      * @throws ValidationException
      */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $credentials = [
+            'nip' => $this->input('nip'),
+            'password' => $this->input('password'),
+        ];
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'nip' => 'NIP atau password yang Anda masukkan salah.',
             ]);
         }
 
@@ -54,8 +81,6 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Ensure the login request is not rate limited.
-     *
      * @throws ValidationException
      */
     public function ensureIsNotRateLimited(): void
@@ -69,18 +94,13 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'nip' => 'Terlalu banyak percobaan login. Silakan coba lagi dalam '
+                . ceil($seconds / 60) . ' menit.',
         ]);
     }
 
-    /**
-     * Get the rate limiting throttle key for the request.
-     */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('nip')) . '|' . $this->ip());
     }
 }

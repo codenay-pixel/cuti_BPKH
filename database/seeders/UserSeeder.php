@@ -8,47 +8,91 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Akun contoh. Login memakai NIP + password (default: password123).
+ * Seeder ini idempotent, aman dijalankan ulang.
+ */
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::create([
-            'name' => 'Admin HRD',
-            'email' => 'admin@bpkh.go.id',
-            'password' => Hash::make('password123'),
-            'role' => 'admin',
-            'nip' => '198001012000011001',
-            'jabatan' => 'Kepala HRD',
+        $admin = $this->buat([
+            'nip'        => '198001012000011001',
+            'name'       => 'Admin Kepegawaian',
+            'email'      => 'admin@bpkh.go.id',
+            'role'       => 'admin',
+            'jabatan'    => 'Kepala Subbagian Tata Usaha',
+            'unit_kerja' => 'Balai Pemantapan Kawasan Hutan',
+            'tmt_pns'    => '2000-01-01',
         ]);
 
-        $atasan = User::create([
-            'name' => 'Budi Santoso',
-            'email' => 'atasan@bpkh.go.id',
-            'password' => Hash::make('password123'),
-            'role' => 'atasan',
-            'nip' => '198202022005011002',
-            'jabatan' => 'Kepala Bidang',
+        $kepalaBalai = $this->buat([
+            'nip'        => '197505052001121001',
+            'name'       => 'Herban Heryandana',
+            'email'      => 'kepala@bpkh.go.id',
+            'role'       => 'atasan',
+            'jabatan'    => 'Kepala Balai',
+            'unit_kerja' => 'Balai Pemantapan Kawasan Hutan',
+            'tmt_pns'    => '2001-12-01',
         ]);
 
-        $pegawai = User::create([
-            'name' => 'Siti Aminah',
-            'email' => 'pegawai@bpkh.go.id',
-            'password' => Hash::make('password123'),
-            'role' => 'pegawai',
-            'nip' => '199003032010012003',
-            'jabatan' => 'Staff',
-            'atasan_id' => $atasan->id,
+        $atasanLangsung = $this->buat([
+            'nip'        => '198202022005011002',
+            'name'       => 'Budi Santoso',
+            'email'      => 'atasan@bpkh.go.id',
+            'role'       => 'atasan_langsung',
+            'jabatan'    => 'Kepala Seksi Pemolaan Kawasan Hutan',
+            'unit_kerja' => 'Seksi Pemolaan Kawasan Hutan',
+            'tmt_pns'    => '2005-01-01',
+            'atasan_id'  => $kepalaBalai->id,
         ]);
 
-        // Buat saldo cuti tahun berjalan untuk pegawai
-        $cutiTahunan = LeaveType::where('nama_cuti', 'Cuti Tahunan')->first();
-
-        LeaveBalance::create([
-            'user_id' => $pegawai->id,
-            'leave_type_id' => $cutiTahunan->id,
-            'tahun' => now()->year,
-            'jatah' => 12,
-            'terpakai' => 0,
+        $pegawai = $this->buat([
+            'nip'        => '199003032010012003',
+            'name'       => 'Siti Aminah',
+            'email'      => 'pegawai@bpkh.go.id',
+            'role'       => 'pegawai',
+            'jabatan'    => 'Analis Kehutanan',
+            'unit_kerja' => 'Seksi Pemolaan Kawasan Hutan',
+            'tmt_pns'    => '2010-01-01',
+            'no_telp'    => '081234567890',
+            'atasan_id'  => $atasanLangsung->id,
         ]);
+
+        // Atasan langsung juga bisa mengajukan cuti ke Kepala Balai
+        $this->saldoTahunan($pegawai);
+        $this->saldoTahunan($atasanLangsung);
+        $this->saldoTahunan($admin);
+    }
+
+    private function buat(array $data): User
+    {
+        $nip = $data['nip'];
+        unset($data['nip']);
+
+        $data['password'] = Hash::make('password123');
+
+        return User::updateOrCreate(['nip' => $nip], $data);
+    }
+
+    /** Buat saldo cuti tahunan untuk 3 tahun terakhir (N-2, N-1, N). */
+    private function saldoTahunan(User $user): void
+    {
+        $jenis = LeaveType::where('kode', LeaveType::TAHUNAN)->first();
+
+        if (! $jenis) {
+            return;
+        }
+
+        for ($i = 2; $i >= 0; $i--) {
+            LeaveBalance::updateOrCreate(
+                [
+                    'user_id'       => $user->id,
+                    'leave_type_id' => $jenis->id,
+                    'tahun'         => now()->year - $i,
+                ],
+                ['jatah' => 12],
+            );
+        }
     }
 }
