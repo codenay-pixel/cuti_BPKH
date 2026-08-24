@@ -105,7 +105,27 @@
          Hanya relevan untuk peran yang menandatangani formulir cuti, jadi
          blok ini disembunyikan bila perannya Pegawai atau Admin. --}}
     <div class="sm:col-span-2 border-t-2 border-gray-300 pt-5"
-         x-show="peran === 'atasan_langsung' || peran === 'atasan'" x-cloak>
+         x-show="peran === 'atasan_langsung' || peran === 'atasan'" x-cloak
+         x-data="{
+            skala: {{ ((int) old('tanda_tangan_skala')) ?: ($u?->tanda_tangan_skala_aman ?? \App\Models\User::TTD_SKALA_DEFAULT) }},
+            pratinjau: @js($u?->tanda_tangan_url),
+            hapus: false,
+            get tinggiPx() {
+                return Math.round({{ \App\Models\User::TTD_TINGGI_DASAR }} * this.skala / 100 * 10) / 10;
+            },
+            get tinggiMm() {
+                return (this.tinggiPx / 96 * 25.4).toFixed(1).replace('.', ',');
+            },
+            batasi() {
+                let n = parseInt(this.skala);
+                if (isNaN(n)) n = {{ \App\Models\User::TTD_SKALA_DEFAULT }};
+                this.skala = Math.min({{ \App\Models\User::TTD_SKALA_MAX }}, Math.max({{ \App\Models\User::TTD_SKALA_MIN }}, n));
+            },
+            gantiBerkas(e) {
+                const berkas = e.target.files[0];
+                if (berkas) this.pratinjau = URL.createObjectURL(berkas);
+            }
+         }">
         <label for="tanda_tangan" class="block text-sm font-semibold text-gray-800 mb-1">
             Gambar Tanda Tangan
         </label>
@@ -121,7 +141,8 @@
                     <img src="{{ $u->tanda_tangan_url }}" alt="Tanda tangan {{ $u->name }}"
                          class="h-24 w-56 object-contain bg-white border-2 border-gray-300 rounded-lg p-1">
                     <label class="inline-flex items-center gap-2 mt-2 text-sm text-gray-700">
-                        <input type="checkbox" name="hapus_tanda_tangan" value="1"
+                        <input type="checkbox" name="hapus_tanda_tangan" value="1" x-model="hapus"
+                               x-on:change="pratinjau = hapus ? null : @js($u?->tanda_tangan_url)"
                                class="rounded border-gray-400 text-rose-600 focus:ring-rose-500">
                         Hapus tanda tangan ini
                     </label>
@@ -137,6 +158,7 @@
                     {{ $u?->tanda_tangan_url ? 'Ganti dengan gambar baru' : 'Unggah gambar' }}
                 </p>
                 <input type="file" id="tanda_tangan" name="tanda_tangan" accept="image/png,image/jpeg"
+                       x-on:change="gantiBerkas($event)"
                        class="w-full text-sm text-gray-700 rounded-lg border-2 border-gray-300 p-2
                               file:mr-3 file:py-1.5 file:px-4 file:rounded-md file:border-0
                               file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700
@@ -145,9 +167,76 @@
                     <li>Format PNG atau JPG, ukuran berkas maksimal 2 MB.</li>
                     <li>Paling rapi: hasil pindai tanda tangan di kertas putih, latar dibuat
                         transparan (PNG), lebar kira-kira 3&ndash;4 kali tingginya.</li>
-                    <li>Gambar akan dicetak setinggi &plusmn; 1,5 cm di atas nama pejabat.</li>
+                    <li>Ukuran cetaknya diatur lewat penggeser di bawah, jadi gambar tidak perlu
+                        dipotong ulang bila terlihat terlalu besar atau terlalu kecil.</li>
                 </ul>
                 @error('tanda_tangan') <p class="text-rose-600 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+        </div>
+
+        {{-- ===== Penyetelan ukuran cetak =====
+             Nilainya persen; 100% = tinggi 30px pada PDF (± 7,9 mm di kertas).
+             Pratinjau di bawah digambar seukuran hasil cetak sungguhan. --}}
+        <div class="mt-5 rounded-xl border-2 border-gray-200 bg-gray-50 p-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <div>
+                    <label for="tanda_tangan_skala" class="block text-sm font-semibold text-gray-800">
+                        Ukuran Tanda Tangan di Dokumen
+                    </label>
+                    <p class="text-xs text-gray-600 mt-0.5">
+                        Geser untuk memperbesar atau memperkecil gambar pada formulir cetak.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="number" inputmode="numeric"
+                           min="{{ \App\Models\User::TTD_SKALA_MIN }}" max="{{ \App\Models\User::TTD_SKALA_MAX }}" step="5"
+                           x-model.number="skala" x-on:change="batasi()"
+                           class="w-20 rounded-lg border-gray-300 text-sm text-center focus:border-primary-500 focus:ring-primary-500">
+                    <span class="text-sm text-gray-700">%</span>
+                    <button type="button" x-on:click="skala = {{ \App\Models\User::TTD_SKALA_DEFAULT }}"
+                            class="text-xs font-medium text-primary-700 hover:text-primary-900 underline">
+                        Setel ulang
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="text-xs text-gray-500 shrink-0">Kecil</span>
+                <input type="range" id="tanda_tangan_skala" name="tanda_tangan_skala"
+                       min="{{ \App\Models\User::TTD_SKALA_MIN }}" max="{{ \App\Models\User::TTD_SKALA_MAX }}" step="5"
+                       x-model.number="skala"
+                       class="w-full h-2 accent-primary-600 cursor-pointer">
+                <span class="text-xs text-gray-500 shrink-0">Besar</span>
+            </div>
+            <p class="text-xs text-gray-600 mt-2">
+                Tinggi di kertas &plusmn; <span class="font-semibold" x-text="tinggiMm"></span> mm
+                (<span x-text="tinggiPx"></span> px). Rentang yang diizinkan
+                {{ \App\Models\User::TTD_SKALA_MIN }}&ndash;{{ \App\Models\User::TTD_SKALA_MAX }}%
+                supaya formulir tetap muat satu halaman A4.
+            </p>
+            @error('tanda_tangan_skala') <p class="text-rose-600 text-xs mt-1">{{ $message }}</p> @enderror
+
+            <p class="text-xs font-medium text-gray-600 mt-4 mb-2">Pratinjau seukuran hasil cetak</p>
+            <div class="bg-white border-2 border-gray-300 rounded-lg px-4 py-3 inline-block max-w-full overflow-x-auto">
+                <div class="text-center" style="font-family: 'DejaVu Sans', sans-serif; font-size: 8.5pt; line-height: 1.15; min-width: 240px;">
+                    <div>{{ $u?->jabatan ?: 'Jabatan Pejabat' }},</div>
+                    <template x-if="pratinjau">
+                        <div class="flex items-end justify-center" x-bind:style="'height:' + tinggiPx + 'px'">
+                            <img x-bind:src="pratinjau" x-bind:style="'height:' + tinggiPx + 'px'"
+                                 class="object-contain" alt="Pratinjau tanda tangan">
+                        </div>
+                    </template>
+                    <template x-if="! pratinjau">
+                        <div class="flex items-center justify-center text-gray-400"
+                             x-bind:style="'height:' + tinggiPx + 'px'">
+                            <span style="font-size: 7pt;">(belum ada gambar)</span>
+                        </div>
+                    </template>
+                    <div style="border-bottom: 1px dotted #000; display: inline-block; min-width: 165px;">
+                        {{ $u?->name ?: 'Nama Pejabat' }}
+                    </div>
+                    <div>NIP. {{ $u?->nip_formatted ?: '................' }}</div>
+                </div>
             </div>
         </div>
     </div>

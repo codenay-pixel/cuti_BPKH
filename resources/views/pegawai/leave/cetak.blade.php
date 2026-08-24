@@ -39,6 +39,17 @@
      */
     $gbrAtasan  = ($apAtasan  && $ttdAtasan)  ? $ttdAtasan->tandaTanganDataUri()  : null;
     $gbrPejabat = ($apPejabat && $ttdPejabat) ? $ttdPejabat->tandaTanganDataUri() : null;
+
+    /**
+     * Tinggi cetak gambar mengikuti setelan masing-masing pejabat
+     * (kolom users.tanda_tangan_skala, diatur admin lewat penggeser di
+     * halaman Kelola Pegawai). Baris tanda tangan tidak pernah lebih pendek
+     * dari ruang kosong biasa supaya tata letak formulir tetap sama.
+     */
+    $tinggiTtdAtasan  = $ttdAtasan  ? $ttdAtasan->tandaTanganTinggiPx()  : 30;
+    $tinggiTtdPejabat = $ttdPejabat ? $ttdPejabat->tandaTanganTinggiPx() : 30;
+    $barisTtdAtasan   = max(30, $tinggiTtdAtasan);
+    $barisTtdPejabat  = max(30, $tinggiTtdPejabat);
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -71,6 +82,9 @@
 
         .ttd-area { text-align: center; vertical-align: top; }
         .spasi-ttd { height: 30px; }
+        /* Tinggi blok gambar tanda tangan ditulis inline per pejabat,
+           mengikuti setelan users.tanda_tangan_skala. Nilai di sini hanya
+           cadangan bila setelan itu belum ada. */
         .spasi-ttd-gambar { height: 38px; }
         .gambar-ttd { height: 38px; }
         .garis-titik { border-bottom: 1px dotted #000; display: inline-block; min-width: 165px; }
@@ -245,7 +259,10 @@
             @if ($ttdAtasan)
                 {{ $ttdAtasan->jabatan }}
                 @if ($gbrAtasan)
-                    <div class="spasi-ttd-gambar"><img src="{{ $gbrAtasan }}" class="gambar-ttd" alt=""></div>
+                    <div class="spasi-ttd-gambar" style="height: {{ $barisTtdAtasan }}px">
+                        <img src="{{ $gbrAtasan }}" class="gambar-ttd"
+                             style="height: {{ $tinggiTtdAtasan }}px" alt="">
+                    </div>
                 @else
                     <div class="spasi-ttd"></div>
                 @endif
@@ -283,7 +300,10 @@
         <td class="ttd-area">
             {{ $ttdPejabat?->jabatan ?? 'Pejabat yang Memberikan Cuti' }}
             @if ($gbrPejabat)
-                <div class="spasi-ttd-gambar"><img src="{{ $gbrPejabat }}" class="gambar-ttd" alt=""></div>
+                <div class="spasi-ttd-gambar" style="height: {{ $barisTtdPejabat }}px">
+                    <img src="{{ $gbrPejabat }}" class="gambar-ttd"
+                         style="height: {{ $tinggiTtdPejabat }}px" alt="">
+                </div>
             @else
                 <div class="spasi-ttd"></div>
             @endif

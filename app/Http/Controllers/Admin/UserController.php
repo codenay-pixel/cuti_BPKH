@@ -59,6 +59,12 @@ class UserController extends Controller
 
         unset($data['tanda_tangan'], $data['hapus_tanda_tangan']);
 
+        // Slider ukuran tanda tangan tidak selalu ikut terkirim (mis. peran
+        // Pegawai). Kolomnya NOT NULL, jadi nilai kosong dilewati saja.
+        if (($data['tanda_tangan_skala'] ?? null) === null) {
+            unset($data['tanda_tangan_skala']);
+        }
+
         $user = User::create($data);
 
         $this->simpanTandaTangan($user, $request->file('tanda_tangan'), false);
@@ -85,6 +91,12 @@ class UserController extends Controller
         }
 
         unset($data['tanda_tangan'], $data['hapus_tanda_tangan']);
+
+        // Slider ukuran tanda tangan tidak selalu ikut terkirim (mis. peran
+        // Pegawai). Kolomnya NOT NULL, jadi nilai kosong dilewati saja.
+        if (($data['tanda_tangan_skala'] ?? null) === null) {
+            unset($data['tanda_tangan_skala']);
+        }
 
         $user->update($data);
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,6 +30,10 @@ class UpdateUserRequest extends FormRequest
             'atasan_id' => ['nullable', 'exists:users,id'],
             'tanda_tangan' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
             'hapus_tanda_tangan' => ['nullable', 'boolean'],
+            'tanda_tangan_skala' => [
+                'nullable', 'integer',
+                'between:' . User::TTD_SKALA_MIN . ',' . User::TTD_SKALA_MAX,
+            ],
         ];
     }
 
@@ -46,6 +51,8 @@ class UpdateUserRequest extends FormRequest
             'nip.unique' => 'NIP ini sudah terdaftar.',
             'tanda_tangan.image' => 'Berkas tanda tangan harus berupa gambar (PNG atau JPG).',
             'tanda_tangan.max' => 'Ukuran gambar tanda tangan maksimal 2 MB.',
+            'tanda_tangan_skala.between' => 'Ukuran cetak tanda tangan harus antara '
+                . User::TTD_SKALA_MIN . '% dan ' . User::TTD_SKALA_MAX . '%.',
         ];
     }
 }

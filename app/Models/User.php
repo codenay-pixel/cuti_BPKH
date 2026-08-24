@@ -22,6 +22,7 @@ class User extends Authenticatable
         'tmt_pns',
         'no_telp',
         'tanda_tangan',
+        'tanda_tangan_skala',
     ];
 
     protected $hidden = [
@@ -35,8 +36,19 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'tmt_pns' => 'date',
             'password' => 'hashed',
+            'tanda_tangan_skala' => 'integer',
         ];
     }
+
+    /**
+     * Ukuran cetak gambar tanda tangan, dalam persen.
+     * 100% = tinggi 30px pada PDF (± 7,9 mm di kertas). Rentangnya dibatasi
+     * supaya blok tanda tangan tidak mendorong formulir menjadi dua halaman.
+     */
+    public const TTD_SKALA_MIN     = 60;
+    public const TTD_SKALA_MAX     = 180;
+    public const TTD_SKALA_DEFAULT = 120;
+    public const TTD_TINGGI_DASAR  = 30;
 
     public const ROLE_LABEL = [
         'pegawai'         => 'Pegawai',
@@ -124,6 +136,29 @@ class User extends Authenticatable
         return $this->punyaTandaTangan()
             ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->tanda_tangan)
             : null;
+    }
+
+    /**
+     * Skala yang sudah dipastikan berada di rentang yang diizinkan.
+     * Data lama (sebelum kolom ini ada) atau nilai kosong dianggap bawaan.
+     */
+    public function getTandaTanganSkalaAmanAttribute(): int
+    {
+        $skala = (int) ($this->tanda_tangan_skala ?: self::TTD_SKALA_DEFAULT);
+
+        return max(self::TTD_SKALA_MIN, min(self::TTD_SKALA_MAX, $skala));
+    }
+
+    /** Tinggi cetak gambar tanda tangan dalam px (satuan yang dipakai DomPDF). */
+    public function tandaTanganTinggiPx(): float
+    {
+        return round(self::TTD_TINGGI_DASAR * $this->tanda_tangan_skala_aman / 100, 1);
+    }
+
+    /** Tinggi cetak dalam mm, untuk ditampilkan sebagai keterangan di form. */
+    public function tandaTanganTinggiMm(): float
+    {
+        return round($this->tandaTanganTinggiPx() / 96 * 25.4, 1);
     }
 
     /**
