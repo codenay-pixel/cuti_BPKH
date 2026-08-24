@@ -10,5 +10,10 @@ php artisan migrate --force
 echo "Running database seeders..."
 php artisan db:seed --force
 
+# --- DIAGNOSTIK SEMENTARA: hapus blok ini setelah masalah login ketemu ---
+echo "=== DIAGNOSTIK KONEKSI DATABASE ==="
+php artisan db:show --counts 2>&1 || true
+echo "=== DIAGNOSTIK KONEKSI DATABASE SELESAI ==="
+
 echo "Starting server..."
 exec /start.sh
