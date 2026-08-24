@@ -130,11 +130,17 @@ class User extends Authenticatable
             && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->tanda_tangan);
     }
 
-    /** URL gambar tanda tangan untuk ditampilkan di halaman web. */
+    /**
+     * URL gambar tanda tangan untuk ditampilkan di halaman web.
+     * Memakai asset() — sama seperti lampiran cuti — supaya alamatnya ikut
+     * host dan port yang sedang dipakai. Storage::url() memakai APP_URL,
+     * jadi gambar gagal tampil saat aplikasi dijalankan lewat
+     * `php artisan serve` (port 8000) sementara APP_URL masih localhost.
+     */
     public function getTandaTanganUrlAttribute(): ?string
     {
         return $this->punyaTandaTangan()
-            ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->tanda_tangan)
+            ? asset('storage/' . str_replace('\\', '/', $this->tanda_tangan))
             : null;
     }
 
