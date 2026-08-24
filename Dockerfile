@@ -5,6 +5,8 @@ COPY package*.json ./
 RUN npm install
 COPY resources/ resources/
 COPY vite.config.js ./
+COPY postcss.config.js ./
+COPY tailwind.config.js ./
 COPY public/ public/
 RUN npm run build
 
