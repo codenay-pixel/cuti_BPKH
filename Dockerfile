@@ -26,6 +26,9 @@ ENV LOG_CHANNEL stderr
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 EXPOSE 80
 
-CMD ["/start.sh"]
+CMD ["/docker-entrypoint.sh"]
