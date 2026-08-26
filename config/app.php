@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Token Unduh Backup
+    |--------------------------------------------------------------------------
+    |
+    | Dipakai oleh route /system/backup/{token} (lihat routes/web.php) untuk
+    | mengizinkan unduh snapshot backup terakhir tanpa login. Set nilainya
+    | lewat environment variable BACKUP_TOKEN di Render.
+    |
+    */
+
+    'backup_token' => env('BACKUP_TOKEN'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

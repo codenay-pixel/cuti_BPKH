@@ -67,3 +67,29 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 require __DIR__ . '/auth.php';
+
+// Unduh snapshot backup data terakhir (lihat App\Console\Commands\BackupSnapshot).
+// Sengaja di luar middleware 'auth' -- diamankan lewat token acak di
+// BACKUP_TOKEN, supaya bisa diunduh manual kapan saja tanpa perlu login.
+Route::get('/system/backup/{token}', function (string $token) {
+    $expected = (string) config('app.backup_token');
+
+    if ($expected === '' || ! hash_equals($expected, $token)) {
+        abort(404);
+    }
+
+    $backup = \Illuminate\Support\Facades\DB::table('system_backups')
+        ->orderByDesc('created_at')
+        ->first();
+
+    if (! $backup) {
+        abort(404, 'Belum ada snapshot backup.');
+    }
+
+    $filename = 'backup-cuti-bpkh-' . \Illuminate\Support\Str::of($backup->created_at)->replace([' ', ':'], '-') . '.json';
+
+    return response($backup->payload, 200, [
+        'Content-Type' => 'application/json',
+        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+    ]);
+})->name('system.backup.latest');

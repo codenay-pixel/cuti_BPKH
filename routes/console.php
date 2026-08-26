@@ -30,6 +30,8 @@ Artisan::command('inspire', function () {
 | Tanpa itu, jadwal ini tidak akan menyala — dan aplikasinya tetap baik-baik
 | saja, karena saldo dibuat otomatis saat halaman dibuka.
 */
+Schedule::command('backup:snapshot')->daily();
+
 Schedule::command('cuti:buka-tahun')
     ->yearlyOn(1, 1, '00:05')
     ->onSuccess(fn () => logger()->info('Hak cuti tahunan ' . now()->year . ' dibuka otomatis.'))
