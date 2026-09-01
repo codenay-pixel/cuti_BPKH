@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="2380" viewBox="0 0 1300 2380">
+<rect width="1300" height="2380" fill="#ffffff"/>
+<defs><marker id="panah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f2937"/></marker></defs>
+<text x="650.0" y="69.2" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="32" font-weight="bold" fill="#134e4a" text-anchor="middle">FLOWCHART ALUR PENGAJUAN CUTI</text>
+<text x="650.0" y="102.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="normal" fill="#4b5563" text-anchor="middle">Aplikasi SICUTI — BPKH</text>
+<line x1="330" y1="118" x2="970" y2="118" stroke="#134e4a" stroke-width="3"/>
+<rect x="320.0" y="120.0" width="220" height="60" rx="30.0" fill="#134e4a" stroke="#134e4a" stroke-width="2.5"/>
+<text x="430" y="157.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="22" font-weight="bold" fill="#ffffff" text-anchor="middle">MULAI</text>
+<rect x="220.0" y="220.0" width="420" height="60" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+<text x="430" y="257.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="20" font-weight="normal" fill="#111827" text-anchor="middle">Pegawai login ke aplikasi SICUTI</text>
+<polygon points="234.0,317.5 660.0,317.5 626.0,432.5 200.0,432.5" fill="#f0fdf4" stroke="#15803d" stroke-width="2.5"/>
+<text x="430" y="356.3" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Isi formulir pengajuan cuti:</text>
+<text x="430" y="381.3" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">jenis cuti, tanggal mulai dan selesai, alasan,</text>
+<text x="430" y="406.3" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">alamat dan telepon selama cuti, lampiran</text>
+<polygon points="430,470.0 650.0,545 430,620.0 210.0,545" fill="#fffbeb" stroke="#b45309" stroke-width="2.5"/>
+<text x="430" y="525.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">Data lengkap dan</text>
+<text x="430" y="551.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">syarat lampiran</text>
+<text x="430" y="577.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">terpenuhi?</text>
+<rect x="220.0" y="660.0" width="420" height="80" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+<text x="430" y="693.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Sistem menghitung jumlah hari kerja</text>
+<text x="430" y="718.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">(Senin–Jumat, akhir pekan dilewati)</text>
+<polygon points="430,785.0 650.0,860 430,935.0 210.0,860" fill="#fffbeb" stroke="#b45309" stroke-width="2.5"/>
+<text x="430" y="853.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">Jenis cuti</text>
+<text x="430" y="879.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">mengurangi saldo?</text>
+<polygon points="430,965.0 650.0,1040 430,1115.0 210.0,1040" fill="#fffbeb" stroke="#b45309" stroke-width="2.5"/>
+<text x="430" y="1033.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">Saldo cuti tahunan</text>
+<text x="430" y="1059.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">mencukupi?</text>
+<rect x="220.0" y="1152.5" width="420" height="85" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+<text x="430" y="1188.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Pengajuan tersimpan. Status:</text>
+<text x="430" y="1213.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">MENUNGGU ATASAN LANGSUNG</text>
+<rect x="220.0" y="1285.0" width="420" height="60" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+<text x="430" y="1321.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="normal" fill="#111827" text-anchor="middle">Atasan langsung memeriksa pengajuan</text>
+<polygon points="430,1380.0 650.0,1455 430,1530.0 210.0,1455" fill="#fffbeb" stroke="#b45309" stroke-width="2.5"/>
+<text x="430" y="1448.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">Disetujui atasan</text>
+<text x="430" y="1474.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">langsung?</text>
+<rect x="220.0" y="1567.5" width="420" height="85" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+<text x="430" y="1603.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Status: MENUNGGU PEJABAT</text>
+<text x="430" y="1628.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">PEMBERI CUTI (Kepala Balai)</text>
+<rect x="220.0" y="1700.0" width="420" height="60" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+<text x="430" y="1736.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="normal" fill="#111827" text-anchor="middle">Kepala Balai memeriksa pengajuan</text>
+<polygon points="430,1795.0 650.0,1870 430,1945.0 210.0,1870" fill="#fffbeb" stroke="#b45309" stroke-width="2.5"/>
+<text x="430" y="1863.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">Disetujui</text>
+<text x="430" y="1889.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="19" font-weight="bold" fill="#111827" text-anchor="middle">Kepala Balai?</text>
+<rect x="220.0" y="1980.0" width="420" height="90" rx="6" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+<text x="430" y="2018.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Saldo cuti dipotong dan nomor surat dibuat.</text>
+<text x="430" y="2043.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Status: DISETUJUI</text>
+<path d="M220.0,2107.5 h420 v83 c-105.0,24.200000000000003 -105.0,-24.200000000000003 -210.0,0 c-105.0,24.200000000000003 -105.0,-24.200000000000003 -210.0,0 Z" fill="#faf5ff" stroke="#7e22ce" stroke-width="2.5"/>
+<text x="430" y="2127.9" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="normal" fill="#111827" text-anchor="middle">Formulir Permintaan dan Pemberian Cuti</text>
+<text x="430" y="2151.9" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="normal" fill="#111827" text-anchor="middle">dicetak sebagai PDF, lengkap dengan</text>
+<text x="430" y="2175.9" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="normal" fill="#111827" text-anchor="middle">tanda tangan digital pejabat</text>
+<rect x="320.0" y="2255.0" width="220" height="60" rx="30.0" fill="#134e4a" stroke="#134e4a" stroke-width="2.5"/>
+<text x="430" y="2292.7" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="22" font-weight="bold" fill="#ffffff" text-anchor="middle">SELESAI</text>
+<rect x="850.0" y="505.0" width="300" height="80" rx="6" fill="#fef2f2" stroke="#b91c1c" stroke-width="2.5"/>
+<text x="1000" y="538.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Tampilkan pesan</text>
+<text x="1000" y="563.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">kesalahan pengisian</text>
+<rect x="850.0" y="1000.0" width="300" height="80" rx="6" fill="#fef2f2" stroke="#b91c1c" stroke-width="2.5"/>
+<text x="1000" y="1033.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Tampilkan pesan</text>
+<text x="1000" y="1058.8" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">saldo tidak mencukupi</text>
+<rect x="850.0" y="1610.0" width="300" height="100" rx="6" fill="#fef2f2" stroke="#b91c1c" stroke-width="2.5"/>
+<text x="1000" y="1641.3" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Status: DITOLAK.</text>
+<text x="1000" y="1666.3" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">Catatan alasan penolakan</text>
+<text x="1000" y="1691.3" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="18" font-weight="normal" fill="#111827" text-anchor="middle">dikirim ke pemohon</text>
+<rect x="850.0" y="1242.5" width="300" height="115" rx="6" fill="#f8fafc" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="7 5"/>
+<text x="1000" y="1272.2" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="15" font-weight="normal" fill="#111827" text-anchor="middle">Catatan: Kepala Balai yang</text>
+<text x="1000" y="1294.2" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="15" font-weight="normal" fill="#111827" text-anchor="middle">tidak memiliki atasan langsung</text>
+<text x="1000" y="1316.2" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="15" font-weight="normal" fill="#111827" text-anchor="middle">melewati tahap ini — langsung</text>
+<text x="1000" y="1338.2" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="15" font-weight="normal" fill="#111827" text-anchor="middle">masuk antrean persetujuan final</text>
+<polyline points="640,1210 850,1290" fill="none" stroke="#1f2937" stroke-width="2.5" stroke-dasharray="4 5"/>
+<polyline points="430,180 430,220" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="430,280 430,317" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="430,432 430,470" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="430,620 430,660" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="444" y="625" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="470" y="646.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Ya</text>
+<polyline points="430,740 430,785" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="430,935 430,965" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="444" y="935" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="470" y="956.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Ya</text>
+<polyline points="430,1115 430,1152" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="444" y="1119" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="470" y="1140.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Ya</text>
+<polyline points="430,1237 430,1285" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="430,1345 430,1380" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="430,1530 430,1567" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="444" y="1534" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="470" y="1555.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Ya</text>
+<polyline points="430,1652 430,1700" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="430,1760 430,1795" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="430,1945 430,1980" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="444" y="1948" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="470" y="1969.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Ya</text>
+<polyline points="430,2070 430,2108" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="430,2212 430,2255" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="650,545 850,545" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="719" y="503" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="745" y="524.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Tidak</text>
+<polyline points="1000,505 1000,348 654,348" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="210,860 120,860 120,1195 220,1195" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="139" y="818" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="165" y="839.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Tidak</text>
+<polyline points="650,1040 850,1040" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="719" y="998" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="745" y="1019.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Tidak</text>
+<polyline points="1150,1040 1240,1040 1240,412 634,412" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<polyline points="650,1455 1000,1455 1000,1608" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="734" y="1413" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="760" y="1434.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Tidak</text>
+<polyline points="650,1870 1000,1870 1000,1712" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="734" y="1828" width="52" height="28" rx="5" fill="#ffffff" stroke="none" opacity="0.95"/>
+<text x="760" y="1849.0" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#b45309" text-anchor="middle">Tidak</text>
+<polyline points="1150,1660 1240,1660 1240,2285 542,2285" fill="none" stroke="#1f2937" stroke-width="2.5" marker-end="url(#panah)"/>
+<rect x="830" y="128" width="370" height="192" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+<text x="1015.0" y="159.9" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="17" font-weight="bold" fill="#334155" text-anchor="middle">KETERANGAN SIMBOL</text>
+<rect x="852.0" y="174.0" width="80" height="24" rx="12.0" fill="#134e4a" stroke="#134e4a" stroke-width="2"/>
+<text x="950" y="191.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="16" font-weight="normal" fill="#334155" text-anchor="start">Mulai / Selesai</text>
+<rect x="852.0" y="204.0" width="80" height="24" rx="4" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+<text x="950" y="221.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="16" font-weight="normal" fill="#334155" text-anchor="start">Proses</text>
+<polygon points="864.0,234.0 932.0,234.0 920.0,258.0 852.0,258.0" fill="#f0fdf4" stroke="#15803d" stroke-width="2"/>
+<text x="950" y="251.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="16" font-weight="normal" fill="#334155" text-anchor="start">Masukan data</text>
+<polygon points="892,264.0 932.0,276 892,288.0 852.0,276" fill="#fffbeb" stroke="#b45309" stroke-width="2"/>
+<text x="950" y="281.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="16" font-weight="normal" fill="#334155" text-anchor="start">Keputusan</text>
+<path d="M852.0,294.0 h80 v16 c-20.0,9.6 -20.0,-9.6 -40.0,0 c-20.0,9.6 -20.0,-9.6 -40.0,0 Z" fill="#faf5ff" stroke="#7e22ce" stroke-width="2"/>
+<text x="950" y="311.6" font-family="'DejaVu Sans', Arial, Helvetica, sans-serif" font-size="16" font-weight="normal" fill="#334155" text-anchor="start">Dokumen / keluaran</text>
+</svg>
