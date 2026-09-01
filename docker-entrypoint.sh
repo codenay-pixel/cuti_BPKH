@@ -15,11 +15,16 @@ else
   php artisan migrate --force
 fi
 
-# Idempotent: LeaveTypeSeeder & UserSeeder mencocokkan baris lama lewat
-# kode/nip sebelum membuat baru, jadi aman dijalankan tiap kali container
-# start (Render free tier tidak punya akses Shell untuk jalankan manual).
-echo "Running database seeders..."
-php artisan db:seed --force
+# Seeder TIDAK dijalankan otomatis setiap start -- ini yang tadinya bikin
+# container crash-loop (duplicate key) dan berisiko menimpa ulang data yang
+# sudah diedit admin lewat UI. Set RUN_SEED=true di environment variable
+# Render lalu redeploy HANYA kalau memang sengaja mau seed (misal setup awal
+# database baru / fresh). Setelah itu HAPUS/matikan lagi variable ini dan
+# redeploy sekali lagi.
+if [ "$RUN_SEED" = "true" ]; then
+  echo "!! RUN_SEED aktif -- menjalankan seeder !!"
+  php artisan db:seed --force
+fi
 
 # Snapshot data ke tabel system_backups (dibatasi maks sekali per ~20 jam
 # oleh command-nya sendiri). Dipasang di sini -- bukan cron sungguhan --
