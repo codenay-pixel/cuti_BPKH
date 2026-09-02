@@ -25,10 +25,15 @@ class UserController extends Controller
             // dipisahkan supaya pencarian tetap ketemu walau formatnya berbeda.
             $angka = preg_replace('/[^0-9]/', '', $cari);
 
-            $query->where(function ($q) use ($cari, $angka) {
-                $q->where('name', 'like', "%{$cari}%")
-                  ->orWhere('jabatan', 'like', "%{$cari}%")
-                  ->orWhere('unit_kerja', 'like', "%{$cari}%")
+            // LIKE biasa case-sensitive di PostgreSQL (beda dengan MySQL yang
+            // defaultnya case-insensitive), jadi dibungkus LOWER() di kedua sisi
+            // supaya "riki" tetap ketemu "Riki" di database manapun.
+            $cariLower = mb_strtolower($cari);
+
+            $query->where(function ($q) use ($cariLower, $cari, $angka) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%{$cariLower}%"])
+                  ->orWhereRaw('LOWER(jabatan) LIKE ?', ["%{$cariLower}%"])
+                  ->orWhereRaw('LOWER(unit_kerja) LIKE ?', ["%{$cariLower}%"])
                   ->orWhere('nip', 'like', "%{$cari}%");
 
                 if ($angka !== '') {
