@@ -12,12 +12,14 @@ class LeaveApproval extends Model
         'keputusan',
         'catatan',
         'tanggal_keputusan',
+        'sebagai_plh',
     ];
 
     protected function casts(): array
     {
         return [
             'tanggal_keputusan' => 'datetime',
+            'sebagai_plh' => 'boolean',
         ];
     }
 

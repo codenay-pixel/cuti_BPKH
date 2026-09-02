@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -65,7 +66,20 @@ class UserController extends Controller
             unset($data['tanda_tangan_skala']);
         }
 
-        $user = User::create($data);
+        // Plh Kepala Balai: hanya berlaku untuk peran Atasan Langsung, dan
+        // cuma boleh satu orang aktif dalam satu waktu.
+        $jadiPlh = $request->boolean('is_plh_kepala_balai') && ($data['role'] ?? null) === 'atasan_langsung';
+        unset($data['is_plh_kepala_balai']);
+
+        $user = DB::transaction(function () use ($data, $jadiPlh) {
+            if ($jadiPlh) {
+                User::where('is_plh_kepala_balai', true)->update(['is_plh_kepala_balai' => false]);
+            }
+
+            $data['is_plh_kepala_balai'] = $jadiPlh;
+
+            return User::create($data);
+        });
 
         $this->simpanTandaTangan($user, $request->file('tanda_tangan'), false);
 
@@ -98,7 +112,23 @@ class UserController extends Controller
             unset($data['tanda_tangan_skala']);
         }
 
-        $user->update($data);
+        // Plh Kepala Balai: hanya berlaku untuk peran Atasan Langsung, dan
+        // cuma boleh satu orang aktif dalam satu waktu -- mencentang untuk
+        // satu pegawai otomatis melepas status Plh pegawai lain.
+        $jadiPlh = $request->boolean('is_plh_kepala_balai') && ($data['role'] ?? $user->role) === 'atasan_langsung';
+        unset($data['is_plh_kepala_balai']);
+
+        DB::transaction(function () use ($user, $data, $jadiPlh) {
+            if ($jadiPlh) {
+                User::where('id', '!=', $user->id)
+                    ->where('is_plh_kepala_balai', true)
+                    ->update(['is_plh_kepala_balai' => false]);
+            }
+
+            $data['is_plh_kepala_balai'] = $jadiPlh;
+
+            $user->update($data);
+        });
 
         $this->simpanTandaTangan(
             $user,

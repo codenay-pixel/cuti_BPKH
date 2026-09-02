@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'kepala_balai' => \App\Http\Middleware\EnsureActingKepalaBalai::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

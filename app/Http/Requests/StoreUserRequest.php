@@ -31,6 +31,7 @@ class StoreUserRequest extends FormRequest
                 'nullable', 'integer',
                 'between:' . User::TTD_SKALA_MIN . ',' . User::TTD_SKALA_MAX,
             ],
+            'is_plh_kepala_balai' => ['nullable', 'boolean'],
         ];
     }
 

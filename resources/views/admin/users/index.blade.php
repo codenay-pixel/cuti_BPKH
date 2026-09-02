@@ -59,6 +59,11 @@
                                 </div>
                                 <span class="shrink-0 px-2 py-1 rounded-md text-[11px] bg-gray-100 text-gray-700">{{ $user->role_label }}</span>
                             </div>
+                            @if ($user->is_plh_kepala_balai)
+                                <span class="inline-block px-2 py-1 rounded-md text-[11px] bg-amber-100 text-amber-800 font-medium">
+                                    Sedang jadi Plh Kepala Balai
+                                </span>
+                            @endif
 
                             <dl class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
                                 <div>
@@ -140,6 +145,9 @@
                                             @else
                                                 <span class="block text-[11px] text-amber-600 mt-1">tanda tangan belum diunggah</span>
                                             @endif
+                                        @endif
+                                        @if ($user->is_plh_kepala_balai)
+                                            <span class="block text-[11px] text-amber-800 font-medium mt-1">sedang jadi Plh Kepala Balai</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 text-gray-700">

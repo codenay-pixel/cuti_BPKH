@@ -44,6 +44,34 @@
         @error('role') <p class="text-rose-600 text-xs mt-1">{{ $message }}</p> @enderror
     </div>
 
+    <div class="sm:col-span-2 rounded-xl border-2 border-amber-200 bg-amber-50 p-4"
+         x-show="peran === 'atasan_langsung'" x-cloak>
+        @php $plhSaatIni = \App\Models\User::where('is_plh_kepala_balai', true)->first(); @endphp
+        <label class="flex items-start gap-3">
+            <input type="checkbox" id="is_plh_kepala_balai" name="is_plh_kepala_balai" value="1"
+                   @checked(old('is_plh_kepala_balai', $u->is_plh_kepala_balai ?? false))
+                   class="mt-1 rounded border-gray-400 text-amber-600 focus:ring-amber-500">
+            <span>
+                <span class="block text-sm font-semibold text-gray-800">
+                    Jadikan Plh (Pelaksana Harian) Kepala Balai
+                </span>
+                <span class="block text-xs text-gray-600 mt-0.5">
+                    Aktifkan saat Kepala Balai sedang dinas luar / tidak sempat login. Pegawai ini
+                    akan bisa menyetujui atau menolak cuti di antrean Persetujuan Final, dan
+                    formulir cetaknya otomatis mencantumkan jabatan
+                    &ldquo;Plh. Pelaksana Harian Kepala Balai&rdquo;, bukan jabatan asalnya.
+                    Hanya satu orang yang bisa aktif dalam satu waktu.
+                    @if ($plhSaatIni && (! $u || $plhSaatIni->id !== $u->id))
+                        <span class="block mt-1 font-medium text-amber-700">
+                            Mencentang ini akan otomatis menonaktifkan Plh {{ $plhSaatIni->name }} yang sedang aktif.
+                        </span>
+                    @endif
+                </span>
+            </span>
+        </label>
+        @error('is_plh_kepala_balai') <p class="text-rose-600 text-xs mt-1">{{ $message }}</p> @enderror
+    </div>
+
     <div>
         <label for="atasan_id" class="block text-sm font-medium text-gray-700 mb-1.5">Atasan Langsung</label>
         <select id="atasan_id" name="atasan_id" class="w-full rounded-lg border-gray-300 text-sm focus:border-primary-500 focus:ring-primary-500">

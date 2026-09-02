@@ -50,6 +50,18 @@
     $tinggiTtdPejabat = $ttdPejabat ? $ttdPejabat->tandaTanganTinggiPx() : 30;
     $barisTtdAtasan   = max(30, $tinggiTtdAtasan);
     $barisTtdPejabat  = max(30, $tinggiTtdPejabat);
+
+    /**
+     * Kalau keputusan level Kepala Balai ini dibuat oleh Plh (Pelaksana
+     * Harian -- lihat users.is_plh_kepala_balai & leave_approvals.sebagai_plh),
+     * jabatan yang dicetak diganti jadi "Plh. Pelaksana Harian Kepala Balai",
+     * BUKAN jabatan asli orang itu (mis. "Kepala Seksi ..."), sesuai kaidah
+     * penulisan pejabat pengganti pada surat dinas.
+     */
+    $sebagaiPlh = (bool) ($apPejabat?->sebagai_plh);
+    $jabatanPejabatCetak = $sebagaiPlh
+        ? 'Plh. Pelaksana Harian Kepala Balai'
+        : ($ttdPejabat?->jabatan ?? 'Pejabat yang Berwenang Memberikan Cuti');
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -104,7 +116,7 @@
         <td style="width:48%">
             {{ config('instansi.kota') }}, {{ $leaveRequest->created_at->translatedFormat('j F Y') }}<br>
             Kepada Yth.<br>
-            {{ $ttdPejabat?->jabatan ?? 'Pejabat yang Berwenang Memberikan Cuti' }}<br>
+            {{ $jabatanPejabatCetak }}<br>
             di {{ config('instansi.kota') }}
         </td>
     </tr>
@@ -298,7 +310,7 @@
             @endif
         </td>
         <td class="ttd-area">
-            {{ $ttdPejabat?->jabatan ?? 'Pejabat yang Memberikan Cuti' }}
+            {{ $jabatanPejabatCetak }}
             @if ($gbrPejabat)
                 <div class="spasi-ttd-gambar" style="height: {{ $barisTtdPejabat }}px">
                     <img src="{{ $gbrPejabat }}" class="gambar-ttd"

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'no_telp',
         'tanda_tangan',
         'tanda_tangan_skala',
+        'is_plh_kepala_balai',
     ];
 
     protected $hidden = [
@@ -37,6 +38,7 @@ class User extends Authenticatable
             'tmt_pns' => 'date',
             'password' => 'hashed',
             'tanda_tangan_skala' => 'integer',
+            'is_plh_kepala_balai' => 'boolean',
         ];
     }
 
@@ -106,6 +108,23 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    /**
+     * Kepala Balai sendiri, ATAU Atasan Langsung yang sedang ditunjuk admin
+     * sebagai Plh (Pelaksana Harian) lewat kolom is_plh_kepala_balai.
+     * Dipakai untuk mengizinkan akses ke antrean Persetujuan Final dan
+     * mencatat siapa yang sedang berhak bertindak sebagai Kepala Balai.
+     */
+    public function bisaBertindakSebagaiKepalaBalai(): bool
+    {
+        return $this->isKepalaBalai() || $this->is_plh_kepala_balai;
+    }
+
+    /** Akun Kepala Balai yang sesungguhnya (peran 'atasan'). Hanya ada satu. */
+    public static function kepalaBalai(): ?self
+    {
+        return static::where('role', 'atasan')->first();
     }
 
     /**

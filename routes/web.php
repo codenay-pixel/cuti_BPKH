@@ -45,8 +45,9 @@ Route::middleware(['auth', 'role:atasan_langsung'])->prefix('approval')->name('a
     Route::post('/{leaveRequest}/tolak', [AtasanApprovalController::class, 'reject'])->name('reject');
 });
 
-// Persetujuan tingkat 2: Kepala Balai (pejabat pemberi cuti)
-Route::middleware(['auth', 'role:atasan'])->prefix('kepala-balai/approval')->name('kepala-balai.approval.')->group(function () {
+// Persetujuan tingkat 2: Kepala Balai (pejabat pemberi cuti), atau Plh-nya
+// (lihat App\Http\Middleware\EnsureActingKepalaBalai).
+Route::middleware(['auth', 'kepala_balai'])->prefix('kepala-balai/approval')->name('kepala-balai.approval.')->group(function () {
     Route::get('/', [KepalaBalaiApprovalController::class, 'index'])->name('index');
     Route::post('/{leaveRequest}/setujui', [KepalaBalaiApprovalController::class, 'approve'])->name('approve');
     Route::post('/{leaveRequest}/tolak', [KepalaBalaiApprovalController::class, 'reject'])->name('reject');

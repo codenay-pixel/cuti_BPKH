@@ -5,6 +5,7 @@ namespace App\Http\Controllers\KepalaBalai;
 use App\Http\Controllers\Controller;
 use App\Models\LeaveApproval;
 use App\Models\LeaveRequest;
+use App\Models\User;
 use App\Services\LeaveService;
 use Illuminate\Http\Request;
 
@@ -14,17 +15,25 @@ class ApprovalController extends Controller
     {
     }
 
+    /**
+     * Antrean & riwayat ini SELALU milik akun Kepala Balai yang sesungguhnya
+     * (current_approver_id mengarah ke situ, bukan ke Plh) -- supaya Kepala
+     * Balai dan Plh-nya melihat antrean yang sama persis, siapa pun yang
+     * sedang login. Lihat User::bisaBertindakSebagaiKepalaBalai().
+     */
     public function index(Request $request)
     {
+        $kepalaBalai = User::kepalaBalai();
+
         // Termasuk status 'menunggu' agar pengajuan dari Atasan Langsung
         // (yang atasannya langsung Kepala Balai) tidak tersangkut.
-        $pengajuan = LeaveRequest::where('current_approver_id', $request->user()->id)
+        $pengajuan = LeaveRequest::where('current_approver_id', $kepalaBalai?->id)
             ->whereIn('status', ['menunggu', 'disetujui_atasan'])
             ->with(['user', 'leaveType', 'approvals.approver'])
             ->latest()
             ->get();
 
-        $riwayat = LeaveRequest::whereHas('approvals', fn ($q) => $q->where('approver_id', $request->user()->id))
+        $riwayat = LeaveRequest::whereHas('approvals', fn ($q) => $q->where('level', 'kepala_balai'))
             ->with(['user', 'leaveType', 'approvals.approver'])
             ->latest()
             ->limit(20)
@@ -35,7 +44,8 @@ class ApprovalController extends Controller
 
     public function approve(Request $request, LeaveRequest $leaveRequest)
     {
-        abort_if($leaveRequest->current_approver_id !== $request->user()->id, 403);
+        $kepalaBalai = User::kepalaBalai();
+        abort_if(! $kepalaBalai || $leaveRequest->current_approver_id !== $kepalaBalai->id, 403);
 
         try {
             $this->leaveService->setujuiCutiFinal($leaveRequest);
@@ -47,6 +57,7 @@ class ApprovalController extends Controller
                 'keputusan'        => 'disetujui',
                 'catatan'          => $request->catatan,
                 'tanggal_keputusan' => now(),
+                'sebagai_plh'      => (bool) $request->user()->is_plh_kepala_balai,
             ]);
 
             $leaveRequest->update(['current_approver_id' => null]);
@@ -59,7 +70,8 @@ class ApprovalController extends Controller
 
     public function reject(Request $request, LeaveRequest $leaveRequest)
     {
-        abort_if($leaveRequest->current_approver_id !== $request->user()->id, 403);
+        $kepalaBalai = User::kepalaBalai();
+        abort_if(! $kepalaBalai || $leaveRequest->current_approver_id !== $kepalaBalai->id, 403);
 
         $request->validate(
             ['catatan' => 'required|string|max:500'],
@@ -73,6 +85,7 @@ class ApprovalController extends Controller
             'keputusan'        => 'ditolak',
             'catatan'          => $request->catatan,
             'tanggal_keputusan' => now(),
+            'sebagai_plh'      => (bool) $request->user()->is_plh_kepala_balai,
         ]);
 
         $leaveRequest->update(['status' => 'ditolak', 'current_approver_id' => null]);

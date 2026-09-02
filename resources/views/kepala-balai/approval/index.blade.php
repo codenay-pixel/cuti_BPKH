@@ -7,6 +7,13 @@
     <div class="pb-12" x-data="{ tolakId: null }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
+            @if (auth()->user()->is_plh_kepala_balai)
+                <div class="rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                    Anda sedang bertindak sebagai <span class="font-semibold">Plh (Pelaksana Harian) Kepala Balai</span>.
+                    Keputusan yang Anda buat di halaman ini akan tercatat dan dicetak sebagai Plh.
+                </div>
+            @endif
+
             {{-- ==================== MENUNGGU KEPUTUSAN ==================== --}}
             <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
                 <div class="px-4 sm:px-5 py-3 border-b border-gray-300 flex items-center justify-between gap-2">
