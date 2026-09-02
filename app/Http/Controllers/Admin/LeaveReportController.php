@@ -42,9 +42,30 @@ class LeaveReportController extends Controller
         return back()->with('success', $pesan);
     }
 
+    /**
+     * Tahun-tahun yang punya data pengajuan cuti, terbaru lebih dulu.
+     * Tahun berjalan selalu disertakan walau belum ada datanya, supaya
+     * dropdown filter tidak pernah kosong di awal tahun.
+     */
+    protected function tahunTersedia(): array
+    {
+        return LeaveRequest::selectRaw('DISTINCT YEAR(tanggal_mulai) as tahun')
+            ->pluck('tahun')
+            ->map(fn ($t) => (int) $t)
+            ->push(now()->year)
+            ->unique()
+            ->sortDesc()
+            ->values()
+            ->all();
+    }
+
     public function index(Request $request)
     {
-        $query = LeaveRequest::with(['user', 'leaveType'])->latest();
+        $tahun = $request->filled('tahun') ? (int) $request->tahun : now()->year;
+
+        $query = LeaveRequest::with(['user', 'leaveType'])
+            ->whereYear('tanggal_mulai', $tahun)
+            ->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -58,20 +79,35 @@ class LeaveReportController extends Controller
 
         $riwayat = $query->paginate(15)->withQueryString();
 
-        return view('admin.reports.index', compact('riwayat'));
+        return view('admin.reports.index', [
+            'riwayat' => $riwayat,
+            'tahun' => $tahun,
+            'tahunTersedia' => $this->tahunTersedia(),
+            'tahunIniBerjalan' => $tahun === now()->year,
+        ]);
     }
 
     public function exportExcel(Request $request)
     {
+        $tahun = $request->filled('tahun') ? (int) $request->tahun : now()->year;
+
+        $namaFile = $tahun === now()->year
+            ? 'rekap-cuti-' . now()->format('Y-m-d') . '.xlsx'
+            : 'rekap-cuti-arsip-' . $tahun . '.xlsx';
+
         return Excel::download(
-            new LeaveReportExport($request->status, $request->nama),
-            'rekap-cuti-' . now()->format('Y-m-d') . '.xlsx'
+            new LeaveReportExport($tahun, $request->status, $request->nama),
+            $namaFile
         );
     }
 
     public function exportPdf(Request $request)
     {
-        $query = LeaveRequest::with(['user', 'leaveType'])->latest();
+        $tahun = $request->filled('tahun') ? (int) $request->tahun : now()->year;
+
+        $query = LeaveRequest::with(['user', 'leaveType'])
+            ->whereYear('tanggal_mulai', $tahun)
+            ->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -85,8 +121,16 @@ class LeaveReportController extends Controller
 
         $riwayat = $query->get();
 
-        $pdf = Pdf::loadView('admin.reports.pdf', compact('riwayat'));
+        $pdf = Pdf::loadView('admin.reports.pdf', [
+            'riwayat' => $riwayat,
+            'tahun' => $tahun,
+            'tahunIniBerjalan' => $tahun === now()->year,
+        ]);
 
-        return $pdf->download('rekap-cuti-' . now()->format('Y-m-d') . '.pdf');
+        $namaFile = $tahun === now()->year
+            ? 'rekap-cuti-' . now()->format('Y-m-d') . '.pdf'
+            : 'rekap-cuti-arsip-' . $tahun . '.pdf';
+
+        return $pdf->download($namaFile);
     }
 }

@@ -8,11 +8,13 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
         th { background-color: #1B4D3E; color: white; }
-        h2 { text-align: center; }
+        h2 { text-align: center; margin-bottom: 2px; }
+        p.sub { text-align: center; margin-top: 0; color: #555; }
     </style>
 </head>
 <body>
     <h2>Rekap Pengajuan Cuti Pegawai</h2>
+    <p class="sub">{{ $tahunIniBerjalan ? 'Tahun ' . $tahun : 'Arsip Tahun ' . $tahun }}</p>
     <p>Dicetak pada: {{ now()->translatedFormat('d F Y H:i') }}</p>
 
     <table>
