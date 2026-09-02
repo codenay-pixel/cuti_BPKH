@@ -49,7 +49,7 @@ class LeaveReportController extends Controller
      */
     protected function tahunTersedia(): array
     {
-        return LeaveRequest::selectRaw('DISTINCT YEAR(tanggal_mulai) as tahun')
+        return LeaveRequest::selectRaw('DISTINCT EXTRACT(YEAR FROM tanggal_mulai) as tahun')
             ->pluck('tahun')
             ->map(fn ($t) => (int) $t)
             ->push(now()->year)
