@@ -9,18 +9,22 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class LeaveReportExport implements FromCollection, WithHeadings, WithMapping
 {
+    protected $tahun;
     protected $status;
     protected $nama;
 
-    public function __construct($status = null, $nama = null)
+    public function __construct($tahun, $status = null, $nama = null)
     {
+        $this->tahun = $tahun;
         $this->status = $status;
         $this->nama = $nama;
     }
 
     public function collection()
     {
-        $query = LeaveRequest::with(['user', 'leaveType'])->latest();
+        $query = LeaveRequest::with(['user', 'leaveType'])
+            ->whereYear('tanggal_mulai', $this->tahun)
+            ->latest();
 
         if ($this->status) {
             $query->where('status', $this->status);

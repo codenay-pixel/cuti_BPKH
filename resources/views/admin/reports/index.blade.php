@@ -2,8 +2,21 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">Rekap Pengajuan Cuti</h2>
-                <p class="text-sm text-gray-500 mt-0.5">Seluruh pengajuan cuti pegawai</p>
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
+                    Rekap Pengajuan Cuti
+                    @unless ($tahunIniBerjalan)
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold">
+                            Arsip {{ $tahun }}
+                        </span>
+                    @endunless
+                </h2>
+                <p class="text-sm text-gray-500 mt-0.5">
+                    @if ($tahunIniBerjalan)
+                        Seluruh pengajuan cuti pegawai tahun {{ $tahun }}
+                    @else
+                        Data arsip tahun {{ $tahun }} &mdash; tahun berjalan saat ini {{ now()->year }}
+                    @endif
+                </p>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
                 <a href="{{ route('admin.reports.export-excel', request()->query()) }}"
@@ -20,6 +33,16 @@
 
                 <form method="GET" class="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-end gap-3 px-4 sm:px-5 py-4 border-b border-gray-300 bg-gray-50">
                     <div class="col-span-2 sm:col-auto">
+                        <label class="block text-[11px] font-medium text-gray-500 mb-1">Tahun</label>
+                        <select name="tahun" class="w-full sm:w-auto rounded-lg border-gray-300 text-sm py-1.5 pe-8">
+                            @foreach ($tahunTersedia as $th)
+                                <option value="{{ $th }}" @selected($tahun === $th)>
+                                    {{ $th === now()->year ? $th . ' (berjalan)' : 'Arsip ' . $th }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-span-2 sm:col-auto">
                         <label class="block text-[11px] font-medium text-gray-500 mb-1">Nama Pegawai</label>
                         <input type="text" name="nama" value="{{ request('nama') }}" placeholder="Cari nama..."
                                class="w-full sm:w-auto rounded-lg border-gray-300 text-sm py-1.5">
@@ -35,7 +58,7 @@
                         </select>
                     </div>
                     <button class="px-4 py-1.5 rounded-lg bg-gray-800 text-white text-sm hover:bg-gray-700">Tampilkan</button>
-                    @if (request()->hasAny(['nama', 'status']))
+                    @if (request()->hasAny(['nama', 'status']) || ! $tahunIniBerjalan)
                         <a href="{{ route('admin.reports.index') }}" class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-800 text-center">Reset</a>
                     @endif
                     <div class="col-span-2 sm:ms-auto text-xs text-gray-500 sm:self-center">Total {{ $riwayat->total() }} pengajuan</div>
@@ -74,7 +97,7 @@
                             </div>
                         </div>
                     @empty
-                        <p class="px-4 py-10 text-center text-sm text-gray-500">Tidak ada data.</p>
+                        <p class="px-4 py-10 text-center text-sm text-gray-500">Tidak ada data{{ $tahunIniBerjalan ? '' : ' di arsip ' . $tahun }}.</p>
                     @endforelse
                 </div>
 
@@ -119,7 +142,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="7" class="px-4 py-10 text-center text-sm text-gray-500">Tidak ada data.</td></tr>
+                                <tr><td colspan="7" class="px-4 py-10 text-center text-sm text-gray-500">Tidak ada data{{ $tahunIniBerjalan ? '' : ' di arsip ' . $tahun }}.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
