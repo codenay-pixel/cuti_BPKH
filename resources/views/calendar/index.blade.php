@@ -270,13 +270,28 @@
                                        class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
                             </div>
 
-                            <div>
+                            <div x-data="{ jenisPilihan: '{{ old('jenis', 'dinas_luar') }}' }">
                                 <label for="jenis" class="block text-sm font-medium text-gray-700 mb-1.5">Jenis Kegiatan</label>
-                                <select id="jenis" name="jenis" class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
+                                <select id="jenis" name="jenis" x-model="jenisPilihan"
+                                        class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
                                     @foreach (\App\Models\OfficeEvent::JENIS as $nilai => $label)
                                         <option value="{{ $nilai }}" @selected(old('jenis', 'dinas_luar') === $nilai)>{{ $label }}</option>
                                     @endforeach
                                 </select>
+
+                                <div x-show="jenisPilihan === 'lainnya'" x-cloak class="mt-2">
+                                    <label for="jenis_lainnya" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Sebutkan Jenisnya <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="jenis_lainnya" name="jenis_lainnya" maxlength="100"
+                                           value="{{ old('jenis_lainnya') }}"
+                                           :required="jenisPilihan === 'lainnya'"
+                                           placeholder="Contoh: Vaksinasi Kantor, Kerja Bakti, dll."
+                                           class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
+                                    @error('jenis_lainnya')
+                                        <p class="text-xs text-rose-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

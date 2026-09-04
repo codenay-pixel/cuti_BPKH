@@ -10,6 +10,7 @@ class OfficeEvent extends Model
         'user_id',
         'nama_acara',
         'jenis',
+        'jenis_lainnya',
         'tanggal_mulai',
         'tanggal_selesai',
         'lokasi',
@@ -39,6 +40,10 @@ class OfficeEvent extends Model
 
     public function getJenisLabelAttribute(): string
     {
+        if ($this->jenis === 'lainnya' && filled($this->jenis_lainnya)) {
+            return $this->jenis_lainnya;
+        }
+
         return self::JENIS[$this->jenis] ?? ucfirst((string) $this->jenis);
     }
 }
