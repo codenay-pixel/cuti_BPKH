@@ -286,7 +286,6 @@
                                     <input type="text" id="jenis_lainnya" name="jenis_lainnya" maxlength="100"
                                            value="{{ old('jenis_lainnya') }}"
                                            :required="jenisPilihan === 'lainnya'"
-                                           placeholder="Contoh: Vaksinasi Kantor, Kerja Bakti, dll."
                                            class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
                                     @error('jenis_lainnya')
                                         <p class="text-xs text-rose-600 mt-1">{{ $message }}</p>
