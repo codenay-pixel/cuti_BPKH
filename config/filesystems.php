@@ -43,24 +43,34 @@ return [
         // kode di controller manapun -- semua tetap panggil Storage::disk('public').
         // Ini penting kalau di-deploy ke platform tanpa disk permanen (mis.
         // Render Free tier), karena disk lokal biasa akan hilang tiap redeploy.
-        'public' => [
-            'driver' => env('PUBLIC_DISK_DRIVER', 'local'),
-            'root' => storage_path('app/public'),
-            'url' => env('PUBLIC_DISK_DRIVER') === 's3'
-                ? env('AWS_URL')
-                : rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
-            'visibility' => 'public',
-            'throw' => false,
-            'report' => false,
-
-            // Dipakai hanya kalau PUBLIC_DISK_DRIVER=s3.
-            'key' => env('AWS_ACCESS_KEY_ID'),
-            'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION', 'auto'),
-            'bucket' => env('AWS_BUCKET'),
-            'endpoint' => env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-        ],
+        //
+        // PENTING: 'root' HANYA boleh diisi untuk driver lokal. Untuk driver
+        // s3, key 'root' dipakai Flysystem sebagai prefix path di dalam
+        // bucket -- kalau diisi path filesystem seperti storage_path(...),
+        // semua file akan ter-upload ke key yang salah/nyasar di bucket
+        // (dan URL publiknya jadi 404 walau upload "berhasil").
+        'public' => array_merge(
+            [
+                'driver' => env('PUBLIC_DISK_DRIVER', 'local'),
+                'visibility' => 'public',
+                'throw' => false,
+                'report' => false,
+            ],
+            env('PUBLIC_DISK_DRIVER', 'local') === 's3'
+                ? [
+                    'key' => env('AWS_ACCESS_KEY_ID'),
+                    'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                    'region' => env('AWS_DEFAULT_REGION', 'auto'),
+                    'bucket' => env('AWS_BUCKET'),
+                    'url' => env('AWS_URL'),
+                    'endpoint' => env('AWS_ENDPOINT'),
+                    'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+                ]
+                : [
+                    'root' => storage_path('app/public'),
+                    'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+                ]
+        ),
 
         's3' => [
             'driver' => 's3',
