@@ -38,13 +38,28 @@ return [
             'report' => false,
         ],
 
+        // Driver disk 'public' bisa dialihkan ke S3-compatible storage (mis.
+        // Cloudflare R2) lewat env PUBLIC_DISK_DRIVER=s3, tanpa perlu ubah
+        // kode di controller manapun -- semua tetap panggil Storage::disk('public').
+        // Ini penting kalau di-deploy ke platform tanpa disk permanen (mis.
+        // Render Free tier), karena disk lokal biasa akan hilang tiap redeploy.
         'public' => [
-            'driver' => 'local',
+            'driver' => env('PUBLIC_DISK_DRIVER', 'local'),
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'url' => env('PUBLIC_DISK_DRIVER') === 's3'
+                ? env('AWS_URL')
+                : rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
+
+            // Dipakai hanya kalau PUBLIC_DISK_DRIVER=s3.
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION', 'auto'),
+            'bucket' => env('AWS_BUCKET'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
         ],
 
         's3' => [
