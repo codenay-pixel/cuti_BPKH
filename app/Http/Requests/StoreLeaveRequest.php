@@ -54,7 +54,6 @@ class StoreLeaveRequest extends FormRequest
     {
         $jenis = LeaveType::find($this->input('leave_type_id'));
 
-        // Saat mengubah, berkas lama tetap dihitung sebagai lampiran yang sah.
         if ($this->route('leaveRequest')?->lampiran) {
             return;
         }
@@ -96,7 +95,6 @@ class StoreLeaveRequest extends FormRequest
             return;
         }
 
-        // Saat mengubah, pengajuan itu sendiri jangan dianggap bentrok.
         $sedangDiubah = $this->route('leaveRequest')?->id;
 
         $overlap = LeaveRequest::where('user_id', $this->user()->id)

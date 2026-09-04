@@ -19,7 +19,6 @@
 
             <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
 
-                {{-- Filter --}}
                 <form method="GET" class="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-end gap-3 px-4 sm:px-5 py-4 border-b border-gray-300 bg-gray-50">
                     <div class="col-span-2 sm:col-auto">
                         <label class="block text-[11px] font-medium text-gray-500 mb-1">Jenis Cuti</label>
@@ -56,7 +55,6 @@
                     </div>
                 </form>
 
-                {{-- ========== TAMPILAN KARTU (HP & tablet kecil) ========== --}}
                 <div class="xl:hidden divide-y divide-gray-300">
                     @forelse ($riwayat as $item)
                         @php
@@ -138,7 +136,6 @@
                     @endforelse
                 </div>
 
-                {{-- ========== TAMPILAN TABEL (layar lebar) ========== --}}
                 <div class="hidden xl:block overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>

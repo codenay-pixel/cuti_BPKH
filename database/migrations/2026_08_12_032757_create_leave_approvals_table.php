@@ -12,8 +12,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('leave_request_id')->constrained()->cascadeOnDelete();
         $table->foreignId('approver_id')->constrained('users');
-        // Daftar nilai final level (termasuk 'atasan_langsung' dan
-        // 'kepala_balai' yang aslinya ditambahkan lewat migration terpisah).
+
         $table->enum('level', ['atasan', 'admin_hrd', 'atasan_langsung', 'kepala_balai']);
         $table->enum('keputusan', ['disetujui', 'ditolak'])->nullable();
         $table->text('catatan')->nullable();

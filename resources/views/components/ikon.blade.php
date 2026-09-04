@@ -1,8 +1,6 @@
 @props(['nama', 'kelas' => 'w-6 h-6'])
 
 @php
-    // Ikon garis (outline), tebal 1.6, gaya Heroicons. Ditulis inline supaya
-    // tidak menambah permintaan berkas dan ikut warna teks induknya.
     $jalur = [
         'cuti-baru'   => '<path d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zM19.5 14.25v4.75A2.25 2.25 0 0117.25 21H5.25A2.25 2.25 0 013 18.75V6.75A2.25 2.25 0 015.25 4.5h4.75"/>',
 

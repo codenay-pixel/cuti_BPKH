@@ -7,7 +7,6 @@
     <div class="pb-12" x-data="{ tolakId: null }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-            {{-- ==================== MENUNGGU KEPUTUSAN ==================== --}}
             <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
                 <div class="px-4 sm:px-5 py-3 border-b border-gray-300 flex items-center justify-between gap-2">
                     <h3 class="font-semibold text-sm text-gray-800">Menunggu Keputusan Anda</h3>
@@ -16,7 +15,6 @@
                     </span>
                 </div>
 
-                {{-- Kartu untuk HP --}}
                 <div class="lg:hidden divide-y divide-gray-300">
                     @forelse ($pengajuan as $item)
                         <div class="p-4 space-y-3">
@@ -81,7 +79,6 @@
                     @endforelse
                 </div>
 
-                {{-- Tabel untuk layar lebar --}}
                 <div class="hidden lg:block overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
@@ -161,14 +158,12 @@
                 </div>
             </div>
 
-            {{-- ==================== RIWAYAT KEPUTUSAN ==================== --}}
             <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
                 <div class="px-4 sm:px-5 py-3 border-b border-gray-300">
                     <h3 class="font-semibold text-sm text-gray-800">Riwayat Keputusan Anda</h3>
                     <p class="text-xs text-gray-500">20 keputusan terakhir</p>
                 </div>
 
-                {{-- Kartu untuk HP --}}
                 <div class="lg:hidden divide-y divide-gray-300">
                     @forelse ($riwayat as $item)
                         <div class="p-4 space-y-3">
@@ -209,7 +204,6 @@
                     @endforelse
                 </div>
 
-                {{-- Tabel untuk layar lebar --}}
                 <div class="hidden lg:block overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>

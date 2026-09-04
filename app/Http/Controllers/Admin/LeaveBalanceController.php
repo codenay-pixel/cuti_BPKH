@@ -20,9 +20,7 @@ class LeaveBalanceController extends Controller
      */
     public function index(Request $request)
     {
-        // Selalu tahun berjalan. Sistem hanya mengakui akumulasi dua tahun ke
-        // belakang (PP 11/2017 Pasal 313), jadi tidak ada gunanya menelusuri
-        // tahun yang lebih lama.
+
         $tahun = now()->year;
         $jenis = $this->leaveService->jenisTahunan();
 
@@ -37,9 +35,6 @@ class LeaveBalanceController extends Controller
 
         $users = $query->paginate(20)->withQueryString();
 
-        // Pastikan baris tahun berjalan ada, supaya pada awal tahun baru tabel
-        // ini tidak menampilkan 0 untuk pegawai yang belum sempat membuka
-        // aplikasi. firstOrCreate, jadi tidak menimpa data yang sudah ada.
         if ($jenis) {
             $users->getCollection()->each(
                 fn (User $u) => $this->leaveService->pastikanSaldoTahunan($u, $tahun)
@@ -98,7 +93,7 @@ class LeaveBalanceController extends Controller
         $batasAtas  = now()->year;
 
         foreach ($data['tahun'] as $th => $nilai) {
-            // Tolak tahun di luar jangkauan akumulasi, walau dikirim manual.
+
             if ((int) $th < $batasBawah || (int) $th > $batasAtas) {
                 continue;
             }

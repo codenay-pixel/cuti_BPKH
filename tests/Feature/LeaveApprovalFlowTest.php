@@ -61,7 +61,6 @@ class LeaveApprovalFlowTest extends TestCase
         $this->assertSame('menunggu', $leaveRequest->status);
         $this->assertSame($atasan->id, $leaveRequest->current_approver_id);
 
-        // Atasan langsung menyetujui -> diteruskan ke Kepala Balai
         $this->actingAs($atasan)
             ->post(route('approval.approve', $leaveRequest), ['catatan' => 'Disetujui, silakan lanjut.'])
             ->assertSessionHasNoErrors();
@@ -70,7 +69,6 @@ class LeaveApprovalFlowTest extends TestCase
         $this->assertSame('disetujui_atasan', $leaveRequest->status);
         $this->assertSame($kepalaBalai->id, $leaveRequest->current_approver_id);
 
-        // Kepala Balai menyetujui final -> saldo terpotong
         $this->actingAs($kepalaBalai)
             ->post(route('kepala-balai.approval.approve', $leaveRequest), ['catatan' => 'Disetujui final.'])
             ->assertSessionHasNoErrors();

@@ -129,9 +129,6 @@
         @error('email') <p class="text-rose-600 text-xs mt-1">{{ $message }}</p> @enderror
     </div>
 
-    {{-- ===== Tanda tangan pejabat =====
-         Hanya relevan untuk peran yang menandatangani formulir cuti, jadi
-         blok ini disembunyikan bila perannya Pegawai atau Admin. --}}
     <div class="sm:col-span-2 border-t-2 border-gray-300 pt-5"
          x-show="peran === 'atasan_langsung' || peran === 'atasan'" x-cloak
          x-data="{
@@ -202,9 +199,6 @@
             </div>
         </div>
 
-        {{-- ===== Penyetelan ukuran cetak =====
-             Nilainya persen; 100% = tinggi 30px pada PDF (± 7,9 mm di kertas).
-             Pratinjau di bawah digambar seukuran hasil cetak sungguhan. --}}
         <div class="mt-5 rounded-xl border-2 border-gray-200 bg-gray-50 p-4">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
                 <div>

@@ -40,7 +40,6 @@ class ApprovalController extends Controller
             'tanggal_keputusan' => now(),
         ]);
 
-        // Teruskan ke atasan dari atasan langsung (Kepala Balai / pejabat pemberi cuti).
         $pejabatPemberiCuti = $request->user()->atasan
             ?? User::where('role', 'atasan')->first();
 

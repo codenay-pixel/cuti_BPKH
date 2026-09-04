@@ -59,7 +59,6 @@ class UserSeeder extends Seeder
             'atasan_id'  => $atasanLangsung->id,
         ]);
 
-        // Atasan langsung juga bisa mengajukan cuti ke Kepala Balai
         $this->saldoTahunan($pegawai);
         $this->saldoTahunan($atasanLangsung);
         $this->saldoTahunan($admin);

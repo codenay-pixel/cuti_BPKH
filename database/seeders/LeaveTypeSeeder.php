@@ -29,8 +29,6 @@ class LeaveTypeSeeder extends Seeder
             }
         }
 
-        // Bersihkan jenis cuti di luar 6 kode resmi (mis. jenis uji coba lama)
-        // yang belum pernah dipakai pengajuan cuti.
         LeaveType::whereNull('kode')->whereDoesntHave('leaveRequests')->delete();
     }
 

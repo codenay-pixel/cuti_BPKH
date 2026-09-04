@@ -25,8 +25,6 @@ class ApprovalController extends Controller
     {
         $kepalaBalai = User::kepalaBalai();
 
-        // Termasuk status 'menunggu' agar pengajuan dari Atasan Langsung
-        // (yang atasannya langsung Kepala Balai) tidak tersangkut.
         $pengajuan = LeaveRequest::where('current_approver_id', $kepalaBalai?->id)
             ->whereIn('status', ['menunggu', 'disetujui_atasan'])
             ->with(['user', 'leaveType', 'approvals.approver'])

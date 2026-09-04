@@ -77,7 +77,6 @@ class LeaveService
             return;
         }
 
-        // Jangan buat saldo bila pegawai baru diangkat tahun depan.
         if ($user->tmt_pns !== null && $user->tmt_pns->year > $tahun) {
             return;
         }
@@ -118,7 +117,6 @@ class LeaveService
             $terpakai = (int) ($row->terpakai ?? 0);
             $sisa = max(0, $jatah - $terpakai);
 
-            // Tahun berjalan boleh dipakai penuh; tahun lampau dibatasi 6 hari.
             $tersedia = $i === 0 ? $sisa : min($sisa, self::MAKS_AKUMULASI);
 
             $rincian[] = [
@@ -167,8 +165,7 @@ class LeaveService
             ->where('leave_type_id', $jenis->id)
             ->whereIn('status', ['menunggu', 'disetujui_atasan'])
             ->whereYear('tanggal_mulai', $tahun)
-            // Saat mengubah pengajuan, hari miliknya sendiri jangan ikut dihitung
-            // sebagai "tertahan" — kalau tidak, saldonya terpakai dua kali.
+
             ->when($kecualikanId, fn ($q) => $q->where('id', '!=', $kecualikanId))
             ->sum('jumlah_hari');
     }
@@ -207,9 +204,6 @@ class LeaveService
         $penyetuju = $user->atasan_id;
         $status = 'menunggu';
 
-        // Kepala Balai adalah puncak rantai persetujuan. Bila ia tidak memiliki
-        // atasan di sistem, pengajuannya melewati tahap Atasan Langsung dan
-        // langsung masuk ke antrean Persetujuan Final miliknya sendiri.
         if (! $penyetuju && $user->isKepalaBalai()) {
             $penyetuju = $user->id;
             $status = 'disetujui_atasan';
@@ -285,7 +279,6 @@ class LeaveService
                 'telepon_cuti'    => $data['telepon_cuti'] ?? null,
             ];
 
-            // Berkas lama baru dihapus setelah yang baru berhasil tersimpan.
             if ($lampiran) {
                 $lama = $leaveRequest->lampiran;
                 $isi['lampiran'] = $lampiran->store('lampiran-cuti', 'public');

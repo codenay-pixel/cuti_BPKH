@@ -5,15 +5,6 @@ use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Rute Autentikasi
-|--------------------------------------------------------------------------
-| Login memakai NIP + password. Registrasi mandiri dan reset password lewat
-| email DINONAKTIFKAN: akun pegawai dibuat oleh Admin Kepegawaian, dan reset
-| password dilakukan admin lewat menu Kelola Pegawai.
-*/
-
 Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');

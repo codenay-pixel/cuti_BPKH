@@ -9,10 +9,8 @@
     <div class="pb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-            {{-- Saldo cuti tahunan --}}
             <x-saldo-cuti :saldo="$saldo" />
 
-            {{-- Aksi cepat --}}
             @php
                 $u = auth()->user();
 
@@ -85,7 +83,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {{-- Pengajuan terakhir --}}
                 <div class="bg-white border border-gray-300 rounded-xl">
                     <div class="px-5 py-3 border-b border-gray-300 flex items-center justify-between">
                         <h3 class="font-semibold text-sm text-gray-800">Pengajuan Cuti Terakhir</h3>
@@ -110,7 +107,6 @@
                     </div>
                 </div>
 
-                {{-- Siapa yang tidak di kantor hari ini --}}
                 <div class="bg-white border border-gray-300 rounded-xl">
                     <div class="px-5 py-3 border-b border-gray-300">
                         <h3 class="font-semibold text-sm text-gray-800">Tidak di Kantor Hari Ini</h3>

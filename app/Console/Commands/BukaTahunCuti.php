@@ -55,7 +55,7 @@ class BukaTahunCuti extends Command
         $belumMenjabat = 0;
 
         foreach (User::orderBy('name')->cursor() as $user) {
-            // Pegawai yang baru diangkat setelah tahun ini belum berhak.
+
             if ($user->tmt_pns !== null && $user->tmt_pns->year > $tahun) {
                 $belumMenjabat++;
                 continue;

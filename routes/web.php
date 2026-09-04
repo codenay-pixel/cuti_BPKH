@@ -20,12 +20,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    // Kalender kantor: semua peran boleh melihat dan menambah acara
     Route::get('/kalender', [CalendarController::class, 'index'])->name('calendar.index');
     Route::post('/kalender/acara', [OfficeEventController::class, 'store'])->name('events.store');
     Route::delete('/kalender/acara/{officeEvent}', [OfficeEventController::class, 'destroy'])->name('events.destroy');
 
-    // Pengajuan cuti: semua peran boleh mengajukan cuti untuk dirinya sendiri
     Route::prefix('cuti')->name('leave.')->group(function () {
         Route::get('/', [LeaveRequestController::class, 'index'])->name('index');
         Route::get('/ajukan', [LeaveRequestController::class, 'create'])->name('create');
@@ -38,26 +36,21 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// Persetujuan tingkat 1: Atasan Langsung
 Route::middleware(['auth', 'role:atasan_langsung'])->prefix('approval')->name('approval.')->group(function () {
     Route::get('/', [AtasanApprovalController::class, 'index'])->name('index');
     Route::post('/{leaveRequest}/setujui', [AtasanApprovalController::class, 'approve'])->name('approve');
     Route::post('/{leaveRequest}/tolak', [AtasanApprovalController::class, 'reject'])->name('reject');
 });
 
-// Persetujuan tingkat 2: Kepala Balai (pejabat pemberi cuti), atau Plh-nya
-// (lihat App\Http\Middleware\EnsureActingKepalaBalai).
 Route::middleware(['auth', 'kepala_balai'])->prefix('kepala-balai/approval')->name('kepala-balai.approval.')->group(function () {
     Route::get('/', [KepalaBalaiApprovalController::class, 'index'])->name('index');
     Route::post('/{leaveRequest}/setujui', [KepalaBalaiApprovalController::class, 'approve'])->name('approve');
     Route::post('/{leaveRequest}/tolak', [KepalaBalaiApprovalController::class, 'reject'])->name('reject');
 });
 
-// Admin kepegawaian
-// Catatan: menu "Jenis Cuti" dihapus. 6 jenis cuti dikunci lewat LeaveTypeSeeder.
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class)->except('show');
-    // Saldo cuti: satu pegawai satu baris, tiga tahun diatur sekaligus
+
     Route::get('saldo-cuti', [LeaveBalanceController::class, 'index'])->name('leave-balances.index');
     Route::get('saldo-cuti/{user}', [LeaveBalanceController::class, 'edit'])->name('leave-balances.edit');
     Route::put('saldo-cuti/{user}', [LeaveBalanceController::class, 'update'])->name('leave-balances.update');
@@ -69,9 +62,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 require __DIR__ . '/auth.php';
 
-// Unduh snapshot backup data terakhir (lihat App\Console\Commands\BackupSnapshot).
-// Sengaja di luar middleware 'auth' -- diamankan lewat token acak di
-// BACKUP_TOKEN, supaya bisa diunduh manual kapan saja tanpa perlu login.
 Route::get('/system/backup/{token}', function (string $token) {
     $expected = (string) config('app.backup_token');
 

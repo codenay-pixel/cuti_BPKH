@@ -21,8 +21,6 @@ class CalendarController extends Controller
         $awalBulan  = Carbon::create($tahun, $bulan, 1)->startOfMonth();
         $akhirBulan = $awalBulan->copy()->endOfMonth();
 
-        // Ambil rentang penuh yang tampil di grid (termasuk sisa bulan sebelah),
-        // supaya tanggal di baris pertama dan terakhir juga bisa diklik.
         $awalGrid  = $awalBulan->copy()->startOfWeek(Carbon::SUNDAY);
         $akhirGrid = $akhirBulan->copy()->endOfWeek(Carbon::SATURDAY);
 
@@ -76,8 +74,6 @@ class CalendarController extends Controller
 
         ksort($agenda);
 
-        // Tanggal yang dipilih saat halaman dibuka: hari ini bila bulan yang
-        // ditampilkan adalah bulan berjalan, selain itu tanggal 1.
         $tanggalAwal = $awalBulan->isSameMonth(now())
             ? now()->format('Y-m-d')
             : $awalBulan->format('Y-m-d');

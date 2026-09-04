@@ -16,7 +16,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
 
-                {{-- Pencarian --}}
                 <form method="GET" class="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-end gap-3 px-4 sm:px-5 py-4 border-b border-gray-300 bg-gray-50">
                     <div class="col-span-2 sm:col-auto">
                         <label for="cari" class="block text-[11px] font-medium text-gray-500 mb-1">Cari Pegawai</label>
@@ -48,7 +47,6 @@
                     </div>
                 </form>
 
-                {{-- Kartu untuk HP --}}
                 <div class="lg:hidden divide-y divide-gray-300">
                     @forelse ($users as $user)
                         <div class="p-4 space-y-3">
@@ -115,7 +113,6 @@
                     @endforelse
                 </div>
 
-                {{-- Tabel untuk layar lebar --}}
                 <div class="hidden lg:block overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>

@@ -30,7 +30,7 @@ class OfficeEventController extends Controller
 
     public function destroy(OfficeEvent $officeEvent)
     {
-        // Hanya pembuat acara atau admin yang boleh menghapus.
+
         abort_unless(
             $officeEvent->user_id === auth()->id() || auth()->user()->isAdmin(),
             403,

@@ -10,13 +10,12 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+
     }
 
     public function boot(): void
     {
-        // Nama hari dan bulan tampil dalam Bahasa Indonesia
-        // (translatedFormat('d F Y') -> "19 Agustus 2026").
+
         Carbon::setLocale('id');
 
         Blade::if('peran', function (string ...$roles) {

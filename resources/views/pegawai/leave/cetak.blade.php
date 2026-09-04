@@ -14,7 +14,6 @@
 
     $centang = fn (bool $ya) => $ya ? '✓' : '';
 
-    // Masa kerja dipecah agar masuk ke empat sel kecil seperti formulir asli
     $mkTahun = $mkBulan = '';
     if ($pemohon->tmt_pns) {
         $d = $pemohon->tmt_pns->diff(now());
@@ -79,9 +78,6 @@
 
         table.bagian { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
         table.bagian td, table.bagian th { border: 1pt solid #000000; padding: 1px 4px; vertical-align: top; }
-        /* Sel kosong di kiri blok tanda tangan: garis atas dihilangkan supaya
-           menyatu dengan baris kotak centang, tetapi kiri dan bawah tetap
-           digambar agar kotak bagian VII/VIII tertutup rapi. */
         table.bagian td.sisi-ttd { border-top: 0; }
         td.judul-bagian { font-weight: normal; }
         .tengah { text-align: center; }
@@ -94,9 +90,6 @@
 
         .ttd-area { text-align: center; vertical-align: top; }
         .spasi-ttd { height: 30px; }
-        /* Tinggi blok gambar tanda tangan ditulis inline per pejabat,
-           mengikuti setelan users.tanda_tangan_skala. Nilai di sini hanya
-           cadangan bila setelan itu belum ada. */
         .spasi-ttd-gambar { height: 38px; }
         .gambar-ttd { height: 38px; }
         .garis-titik { border-bottom: 1px dotted #000; display: inline-block; min-width: 165px; }
@@ -109,7 +102,6 @@
 </head>
 <body>
 
-{{-- ===== Tempat, tanggal, dan tujuan ===== --}}
 <table class="tempat" style="width:100%">
     <tr>
         <td style="width:52%">&nbsp;</td>
@@ -124,7 +116,6 @@
 
 <h1 class="judul">Formulir Permintaan dan Pemberian Cuti</h1>
 
-{{-- ===== I. DATA PEGAWAI ===== --}}
 <table class="bagian">
     <tr><td class="judul-bagian" colspan="8">I. DATA PEGAWAI</td></tr>
     <tr>
@@ -148,7 +139,6 @@
     </tr>
 </table>
 
-{{-- ===== II. JENIS CUTI YANG DIAMBIL ===== --}}
 <table class="bagian">
     <tr><td class="judul-bagian" colspan="4">II. JENIS CUTI YANG DIAMBIL**</td></tr>
     <tr>
@@ -171,13 +161,11 @@
     </tr>
 </table>
 
-{{-- ===== III. ALASAN CUTI ===== --}}
 <table class="bagian">
     <tr><td class="judul-bagian">III. ALASAN CUTI</td></tr>
     <tr><td class="isi" style="height:22px">{{ $leaveRequest->alasan }}</td></tr>
 </table>
 
-{{-- ===== IV. LAMANYA CUTI ===== --}}
 <table class="bagian">
     <tr><td class="judul-bagian" colspan="6">IV. LAMANYA CUTI</td></tr>
     <tr>
@@ -192,7 +180,6 @@
     </tr>
 </table>
 
-{{-- ===== V. CATATAN CUTI ===== --}}
 <table class="bagian">
     <tr><td class="judul-bagian" colspan="5">V. CATATAN CUTI***</td></tr>
     <tr>
@@ -227,7 +214,6 @@
     @endforeach
 </table>
 
-{{-- ===== VI. ALAMAT SELAMA MENJALANKAN CUTI ===== --}}
 <table class="bagian">
     <tr><td class="judul-bagian" colspan="3">VI. ALAMAT SELAMA MENJALANKAN CUTI</td></tr>
     <tr>
@@ -246,7 +232,6 @@
     </tr>
 </table>
 
-{{-- ===== VII. PERTIMBANGAN ATASAN LANGSUNG ===== --}}
 <table class="bagian">
     <tr><td class="judul-bagian" colspan="4">VII. PERTIMBANGAN ATASAN LANGSUNG**</td></tr>
     <tr class="tengah">
@@ -288,7 +273,6 @@
     </tr>
 </table>
 
-{{-- ===== VIII. KEPUTUSAN PEJABAT YANG BERWENANG MEMBERIKAN CUTI ===== --}}
 <table class="bagian" style="margin-bottom:0">
     <tr><td class="judul-bagian" colspan="4">VIII. KEPUTUSAN PEJABAT YANG BERWENANG MEMBERIKAN CUTI**</td></tr>
     <tr class="tengah">
@@ -325,7 +309,6 @@
     </tr>
 </table>
 
-{{-- ===== Catatan kaki ===== --}}
 <table class="catatan">
     <tr><td colspan="2">Catatan :</td></tr>
     <tr><td style="width:34px">*</td><td>Coret yang tidak perlu</td></tr>

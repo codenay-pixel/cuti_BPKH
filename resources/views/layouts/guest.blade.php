@@ -23,7 +23,6 @@
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex">
 
-            <!-- Panel Kiri: Hijau BPKH -->
             <div class="hidden lg:flex lg:w-1/2 bg-primary-700 flex-col items-center justify-center text-white p-12">
                 <div class="bg-white rounded-full p-6 mb-6">
                     <img src="{{ asset('images/logo-kemenhut.png') }}" alt="Logo Kementerian Kehutanan" class="w-[72px] h-[72px] object-contain">
@@ -40,11 +39,9 @@
                 </p>
             </div>
 
-            <!-- Panel Kanan: Form -->
             <div class="w-full lg:w-1/2 flex items-center justify-center bg-gray-50 p-6">
                 <div class="w-full max-w-md">
 
-                    <!-- Kepala halaman untuk layar kecil -->
                     <div class="lg:hidden text-center mb-6">
                         <img src="{{ asset('images/logo-kemenhut.png') }}" alt="Logo Kementerian Kehutanan"
                              class="w-16 h-16 object-contain mx-auto">

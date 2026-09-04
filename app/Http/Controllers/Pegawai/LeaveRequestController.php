@@ -130,7 +130,7 @@ class LeaveRequestController extends Controller
     /** Cetak Formulir Permintaan dan Pemberian Cuti sebagai PDF. */
     public function cetak(Request $request, LeaveRequest $leaveRequest)
     {
-        // Pemohon, para penyetuju, dan admin boleh mencetak.
+
         $user = $request->user();
         $boleh = $leaveRequest->user_id === $user->id
             || $user->isAdmin()
@@ -140,9 +140,6 @@ class LeaveRequestController extends Controller
 
         abort_unless($boleh, 403, 'Anda tidak berhak mencetak formulir ini.');
 
-        // Kunci utama: formulir baru boleh keluar setelah disetujui penuh.
-        // Dicek di sini, bukan sekadar menyembunyikan tombol, supaya tidak bisa
-        // ditembus dengan mengetik alamat URL-nya langsung.
         abort_unless(
             $leaveRequest->sudahDisetujuiPenuh(),
             403,
@@ -154,9 +151,6 @@ class LeaveRequestController extends Controller
 
         $saldo = $this->leaveService->rincianSaldoTahunan($leaveRequest->user);
 
-        // Nama pejabat dicetak walau keputusannya belum ada, supaya formulir bisa
-        // dibawa untuk ditandatangani. Kotak centang tetap kosong sampai benar-benar
-        // ada keputusan di sistem.
         $apAtasan  = $leaveRequest->approvalAtasanLangsung();
         $apPejabat = $leaveRequest->approvalKepalaBalai();
 

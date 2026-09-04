@@ -17,7 +17,6 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                {{-- ==================== KALENDER ==================== --}}
                 <div class="lg:col-span-2 bg-white border border-gray-300 rounded-xl p-4 sm:p-5">
 
                     @php
@@ -50,7 +49,6 @@
                         <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-accent-500"></span> Dinas / Acara</span>
                     </div>
 
-                    {{-- ---------- GRID: tablet & desktop ---------- --}}
                     <div class="hidden sm:block">
                         <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-semibold text-gray-500 mb-1">
                             <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
@@ -100,7 +98,6 @@
                         </p>
                     </div>
 
-                    {{-- ---------- DAFTAR: HP ---------- --}}
                     <div class="sm:hidden">
                         @php
                             $agendaBulanIni = collect($agenda)
@@ -139,10 +136,8 @@
                     </div>
                 </div>
 
-                {{-- ==================== SIDEBAR ==================== --}}
                 <div class="space-y-6">
 
-                    {{-- Panel tanggal terpilih --}}
                     <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
                         <div class="px-4 sm:px-5 py-3 border-b border-gray-300 bg-gray-50">
                             <div class="flex items-start justify-between gap-2">
@@ -193,7 +188,6 @@
                         </div>
                     </div>
 
-                    {{-- Agenda mendatang --}}
                     <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
                         <div class="px-4 sm:px-5 py-3 border-b border-gray-300 flex items-center justify-between">
                             <h3 class="font-semibold text-sm text-gray-800">Agenda Mendatang</h3>
@@ -239,7 +233,6 @@
             </div>
         </div>
 
-        {{-- ==================== MODAL: TAMBAH ACARA ==================== --}}
         <div x-show="modal" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display:none">
             <div class="fixed inset-0 bg-gray-900/50" @click="modal = false"></div>
 

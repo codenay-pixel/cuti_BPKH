@@ -97,9 +97,9 @@ class LeaveServiceTest extends TestCase
     {
         $user = $this->buatPegawai();
 
-        LeaveBalance::create(['user_id' => $user->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2024, 'jatah' => 12, 'terpakai' => 0]); // sisa 12, tersedia dibatasi 6
-        LeaveBalance::create(['user_id' => $user->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2025, 'jatah' => 12, 'terpakai' => 10]); // sisa 2, di bawah batas
-        LeaveBalance::create(['user_id' => $user->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2026, 'jatah' => 12, 'terpakai' => 0]); // tahun berjalan, penuh
+        LeaveBalance::create(['user_id' => $user->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2024, 'jatah' => 12, 'terpakai' => 0]);
+        LeaveBalance::create(['user_id' => $user->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2025, 'jatah' => 12, 'terpakai' => 10]);
+        LeaveBalance::create(['user_id' => $user->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2026, 'jatah' => 12, 'terpakai' => 0]);
 
         $rincian = $this->service->rincianSaldoTahunan($user, 2026);
 
@@ -209,8 +209,8 @@ class LeaveServiceTest extends TestCase
 
         $pegawai = $this->buatPegawai();
 
-        LeaveBalance::create(['user_id' => $pegawai->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2024, 'jatah' => 12, 'terpakai' => 8]); // sisa 4
-        LeaveBalance::create(['user_id' => $pegawai->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2025, 'jatah' => 12, 'terpakai' => 0]); // sisa 12, dibatasi 6
+        LeaveBalance::create(['user_id' => $pegawai->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2024, 'jatah' => 12, 'terpakai' => 8]);
+        LeaveBalance::create(['user_id' => $pegawai->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2025, 'jatah' => 12, 'terpakai' => 0]);
         LeaveBalance::create(['user_id' => $pegawai->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2026, 'jatah' => 12, 'terpakai' => 0]);
 
         $leaveRequest = LeaveRequest::create([
@@ -218,7 +218,7 @@ class LeaveServiceTest extends TestCase
             'leave_type_id' => $this->tahunan->id,
             'tanggal_mulai' => '2026-06-15',
             'tanggal_selesai' => '2026-06-19',
-            'jumlah_hari' => 7, // ambil 4 sisa dari 2024, sisanya 3 dari 2025
+            'jumlah_hari' => 7,
             'alasan' => 'Uji pemotongan saldo lintas tahun saat final',
             'status' => 'disetujui_atasan',
         ]);
@@ -227,9 +227,9 @@ class LeaveServiceTest extends TestCase
 
         $this->assertSame('disetujui', $leaveRequest->fresh()->status);
         $this->assertNotNull($leaveRequest->fresh()->nomor_surat);
-        $this->assertSame(12, LeaveBalance::where('tahun', 2024)->value('terpakai')); // 8+4, habis
-        $this->assertSame(3, LeaveBalance::where('tahun', 2025)->value('terpakai'));  // 0+3
-        $this->assertSame(0, LeaveBalance::where('tahun', 2026)->value('terpakai'));  // tidak tersentuh
+        $this->assertSame(12, LeaveBalance::where('tahun', 2024)->value('terpakai'));
+        $this->assertSame(3, LeaveBalance::where('tahun', 2025)->value('terpakai'));
+        $this->assertSame(0, LeaveBalance::where('tahun', 2026)->value('terpakai'));
     }
 
     public function test_setujui_cuti_final_gagal_jika_saldo_tidak_cukup_saat_finalisasi(): void
@@ -238,7 +238,7 @@ class LeaveServiceTest extends TestCase
 
         $pegawai = $this->buatPegawai();
 
-        LeaveBalance::create(['user_id' => $pegawai->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2026, 'jatah' => 12, 'terpakai' => 10]); // sisa 2
+        LeaveBalance::create(['user_id' => $pegawai->id, 'leave_type_id' => $this->tahunan->id, 'tahun' => 2026, 'jatah' => 12, 'terpakai' => 10]);
 
         $leaveRequest = LeaveRequest::create([
             'user_id' => $pegawai->id,
@@ -276,8 +276,8 @@ class LeaveServiceTest extends TestCase
         $kembali = $this->service->kembalikanSaldo($leaveRequest);
 
         $this->assertSame(6, $kembali);
-        $this->assertSame(0, LeaveBalance::where('tahun', 2024)->value('terpakai')); // 4-4
-        $this->assertSame(1, LeaveBalance::where('tahun', 2025)->value('terpakai')); // 3-2
+        $this->assertSame(0, LeaveBalance::where('tahun', 2024)->value('terpakai'));
+        $this->assertSame(1, LeaveBalance::where('tahun', 2025)->value('terpakai'));
     }
 
     public function test_kembalikan_saldo_nol_jika_status_bukan_disetujui(): void

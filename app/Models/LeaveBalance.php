@@ -24,7 +24,6 @@ class LeaveBalance extends Model
         return $this->belongsTo(LeaveType::class);
     }
 
-    // Accessor: sisa cuti dihitung otomatis, tidak perlu disimpan di DB
     protected function sisa(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(

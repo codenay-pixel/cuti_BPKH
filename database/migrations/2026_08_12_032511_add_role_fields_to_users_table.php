@@ -10,10 +10,7 @@ return new class extends Migration
 {
     Schema::table('users', function (Blueprint $table) {
         $table->string('nip')->unique()->nullable()->after('name');
-        // Daftar nilai final role (termasuk 'atasan_langsung' yang aslinya
-        // ditambahkan lewat migration terpisah). Digabung di sini supaya
-        // instalasi baru tidak perlu lagi lewat langkah "kepala_divisi" yang
-        // hanya pernah dipakai sebentar sebagai nama transisi.
+
         $table->enum('role', ['pegawai', 'atasan_langsung', 'atasan', 'admin'])->default('pegawai')->after('email');
         $table->foreignId('atasan_id')->nullable()->constrained('users')->nullOnDelete()->after('role');
         $table->string('jabatan')->nullable();

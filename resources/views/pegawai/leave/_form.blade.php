@@ -36,7 +36,6 @@
                 @csrf
                 @if ($ubah) @method('PUT') @endif
 
-                {{-- Kolom kiri: form --}}
                 <div class="lg:col-span-2 space-y-6">
 
                     <div class="bg-white border border-gray-300 rounded-xl p-6 space-y-5">
@@ -92,7 +91,6 @@
                             Sabtu, Minggu, dan tanggal di luar hari kerja tidak dihitung sebagai hari cuti.
                         </p>
 
-                        {{-- Peringatan melebihi batas --}}
                         <template x-if="jenis && jenis.maksHari && jumlahHari > jenis.maksHari">
                             <div class="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700">
                                 <span x-text="jenis.nama"></span> maksimal <span x-text="jenis.maksHari"></span> hari.
@@ -197,7 +195,6 @@
                     </div>
                 </div>
 
-                {{-- Kolom kanan: saldo + syarat dokumen --}}
                 <div class="space-y-6">
                     <x-saldo-cuti :saldo="$saldo" :tertahan="$tertahan" />
 

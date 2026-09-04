@@ -13,27 +13,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-/**
- * Snapshot seluruh data penting (bukan tabel framework seperti sessions/cache)
- * ke DUA tempat:
- *
- *  1. Tabel system_backups -- cepat diakses dari dalam aplikasi, tapi TIDAK
- *     aman sebagai satu-satunya backup karena ada di database yang sama
- *     dengan data aslinya (kalau database Neon-nya hilang/corrupt, baris
- *     ini ikut hilang).
- *  2. File JSON di disk 'public' (folder backups/) -- inilah yang membuat
- *     backup ini benar-benar "di luar" database. Selama PUBLIC_DISK_DRIVER
- *     production diset ke s3 (lihat config/filesystems.php), file ini
- *     otomatis tersimpan di Cloudflare R2, terpisah total dari Neon.
- *     Kalau PUBLIC_DISK_DRIVER masih 'local' (mis. di komputer development),
- *     file ini cuma tersimpan lokal seperti biasa -- tidak ada bedanya.
- *
- * Dipanggil dari docker-entrypoint.sh setiap container start -- bukan cron
- * sungguhan, karena aplikasi ini belum punya proses scheduler yang jalan
- * terus di server (lihat catatan di routes/console.php). Dibatasi maksimal
- * sekali per ~20 jam supaya restart berkali-kali dalam sehari tidak bikin
- * snapshot berulang percuma.
- */
 class BackupSnapshot extends Command
 {
     protected $signature = 'backup:snapshot';
@@ -67,13 +46,8 @@ class BackupSnapshot extends Command
             'created_at' => now(),
         ]);
 
-        // Retensi 90 hari supaya tabel ini tidak membengkak selamanya.
         DB::table('system_backups')->where('created_at', '<', now()->subDays(90))->delete();
 
-        // Salinan kedua, di luar database -- lihat penjelasan di atas kelas.
-        // Sengaja tidak menggagalkan perintah ini kalau upload gagal (mis.
-        // kredensial R2 belum/salah diisi): backup ke tabel di atas tetap
-        // tersimpan, jadi aplikasi tidak terganggu.
         try {
             $nama = 'backups/cuti-backup-' . now()->format('Y-m-d_His') . '.json';
 

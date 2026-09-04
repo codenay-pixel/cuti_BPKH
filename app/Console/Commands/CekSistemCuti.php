@@ -44,8 +44,6 @@ class CekSistemCuti extends Command
         return self::SUCCESS;
     }
 
-    /* ---------------------------------------------------------------- */
-
     private function cekKolom(): void
     {
         $this->line('<options=bold>1. Struktur tabel (hasil migrate)</>');
@@ -141,7 +139,6 @@ class CekSistemCuti extends Command
                 . 'seperti NIP PNS: ' . $nipPendek->map(fn ($u) => $u->name . ' (' . $u->nip . ')')->implode(', '));
         }
 
-        // Kepala Balai adalah puncak rantai, wajar tidak punya atasan.
         $tanpaAtasan = User::whereNull('atasan_id')->get()
             ->filter(fn (User $u) => $u->perluAtasanLangsung());
         $blokir = $tanpaAtasan->whereIn('role', ['pegawai', 'atasan_langsung']);
@@ -234,8 +231,6 @@ class CekSistemCuti extends Command
 
         $this->newLine();
     }
-
-    /* ---------------------------------------------------------------- */
 
     /** @param bool|null $ok true = lolos, false = masalah, null = peringatan */
     private function baris(?bool $ok, string $pesan): void

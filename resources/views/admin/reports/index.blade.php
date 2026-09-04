@@ -64,7 +64,6 @@
                     <div class="col-span-2 sm:ms-auto text-xs text-gray-500 sm:self-center">Total {{ $riwayat->total() }} pengajuan</div>
                 </form>
 
-                {{-- Kartu untuk HP --}}
                 <div class="lg:hidden divide-y divide-gray-300">
                     @forelse ($riwayat as $item)
                         <div class="p-4 space-y-2">
@@ -101,7 +100,6 @@
                     @endforelse
                 </div>
 
-                {{-- Tabel untuk layar lebar --}}
                 <div class="hidden lg:block overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>

@@ -87,7 +87,6 @@
                     </dl>
                 </div>
 
-                {{-- Syarat dokumen jenis cuti ini --}}
                 @if ($leaveRequest->leaveType->syaratList())
                     <div class="bg-white border border-gray-300 rounded-xl p-5">
                         <h3 class="font-semibold text-sm text-gray-800 mb-3">
@@ -109,7 +108,6 @@
                 @endif
             </div>
 
-            {{-- Linimasa persetujuan --}}
             <div class="bg-white border border-gray-300 rounded-xl p-5 h-fit">
                 <h3 class="font-semibold text-sm text-gray-800 mb-4">Jejak Persetujuan</h3>
 

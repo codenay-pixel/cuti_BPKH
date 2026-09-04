@@ -21,13 +21,8 @@ class UserController extends Controller
         if ($request->filled('cari')) {
             $cari = trim($request->cari);
 
-            // NIP sering ditulis berspasi (19900303 201001 2 003). Angkanya
-            // dipisahkan supaya pencarian tetap ketemu walau formatnya berbeda.
             $angka = preg_replace('/[^0-9]/', '', $cari);
 
-            // LIKE biasa case-sensitive di PostgreSQL (beda dengan MySQL yang
-            // defaultnya case-insensitive), jadi dibungkus LOWER() di kedua sisi
-            // supaya "riki" tetap ketemu "Riki" di database manapun.
             $cariLower = mb_strtolower($cari);
 
             $query->where(function ($q) use ($cariLower, $cari, $angka) {
@@ -65,14 +60,10 @@ class UserController extends Controller
 
         unset($data['tanda_tangan'], $data['hapus_tanda_tangan']);
 
-        // Slider ukuran tanda tangan tidak selalu ikut terkirim (mis. peran
-        // Pegawai). Kolomnya NOT NULL, jadi nilai kosong dilewati saja.
         if (($data['tanda_tangan_skala'] ?? null) === null) {
             unset($data['tanda_tangan_skala']);
         }
 
-        // Plh Kepala Balai: hanya berlaku untuk peran Atasan Langsung, dan
-        // cuma boleh satu orang aktif dalam satu waktu.
         $jadiPlh = $request->boolean('is_plh_kepala_balai') && ($data['role'] ?? null) === 'atasan_langsung';
         unset($data['is_plh_kepala_balai']);
 
@@ -111,15 +102,10 @@ class UserController extends Controller
 
         unset($data['tanda_tangan'], $data['hapus_tanda_tangan']);
 
-        // Slider ukuran tanda tangan tidak selalu ikut terkirim (mis. peran
-        // Pegawai). Kolomnya NOT NULL, jadi nilai kosong dilewati saja.
         if (($data['tanda_tangan_skala'] ?? null) === null) {
             unset($data['tanda_tangan_skala']);
         }
 
-        // Plh Kepala Balai: hanya berlaku untuk peran Atasan Langsung, dan
-        // cuma boleh satu orang aktif dalam satu waktu -- mencentang untuk
-        // satu pegawai otomatis melepas status Plh pegawai lain.
         $jadiPlh = $request->boolean('is_plh_kepala_balai') && ($data['role'] ?? $user->role) === 'atasan_langsung';
         unset($data['is_plh_kepala_balai']);
 
