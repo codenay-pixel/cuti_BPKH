@@ -41,7 +41,7 @@
                                     </p>
                                 @endif
                                 @if ($item->lampiran)
-                                    <a href="{{ asset('storage/' . $item->lampiran) }}" target="_blank"
+                                    <a href="{{ $item->lampiran_url }}" target="_blank"
                                        class="inline-block text-xs text-primary-600 hover:underline">Lihat dokumen pendukung</a>
                                 @else
                                     <p class="text-[11px] text-gray-400">Tanpa lampiran</p>
@@ -118,7 +118,7 @@
                                     <td class="px-4 py-3 text-center whitespace-nowrap">{{ $item->jumlah_hari }} hari</td>
                                     <td class="px-4 py-3 text-center">
                                         @if ($item->lampiran)
-                                            <a href="{{ asset('storage/' . $item->lampiran) }}" target="_blank"
+                                            <a href="{{ $item->lampiran_url }}" target="_blank"
                                                class="text-primary-600 hover:underline text-xs">Lihat</a>
                                         @else
                                             <span class="text-gray-300 text-xs">&mdash;</span>

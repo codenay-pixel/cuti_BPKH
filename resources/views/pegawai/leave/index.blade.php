@@ -106,7 +106,7 @@
                                 @endif
 
                                 @if ($item->lampiran)
-                                    <a href="{{ asset('storage/' . $item->lampiran) }}" target="_blank"
+                                    <a href="{{ $item->lampiran_url }}" target="_blank"
                                        class="flex-1 min-w-[5rem] text-center px-3 py-2 rounded-lg border border-gray-300 text-xs text-gray-700">
                                         Berkas
                                     </a>
@@ -179,7 +179,7 @@
                                     </td>
                                     <td class="px-3 py-3 text-center">
                                         @if ($item->lampiran)
-                                            <a href="{{ asset('storage/' . $item->lampiran) }}" target="_blank"
+                                            <a href="{{ $item->lampiran_url }}" target="_blank"
                                                class="text-primary-600 hover:underline text-xs">Lihat</a>
                                         @else
                                             <span class="text-gray-300 text-xs">&mdash;</span>

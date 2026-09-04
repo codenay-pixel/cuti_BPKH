@@ -71,7 +71,7 @@
                             <dt class="text-gray-500">Dokumen Pendukung</dt>
                             <dd class="col-span-2">
                                 @if ($leaveRequest->lampiran)
-                                    <a href="{{ asset('storage/' . $leaveRequest->lampiran) }}" target="_blank"
+                                    <a href="{{ $leaveRequest->lampiran_url }}" target="_blank"
                                        class="text-primary-600 hover:underline">Lihat / unduh berkas</a>
                                 @else
                                     <span class="text-gray-400">Tidak ada lampiran</span>

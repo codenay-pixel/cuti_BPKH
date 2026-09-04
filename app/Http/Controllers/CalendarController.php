@@ -69,7 +69,7 @@ class CalendarController extends Controller
                     'ket'      => trim(($a->lokasi ? $a->lokasi . ' · ' : '') . $a->jenis_label
                                   . ' · ' . $a->tanggal_mulai->translatedFormat('d M')
                                   . ' s/d ' . $a->tanggal_selesai->translatedFormat('d M Y')),
-                    'lampiran' => $a->lampiran ? asset('storage/' . $a->lampiran) : null,
+                    'lampiran' => $a->lampiran_url,
                 ];
             }
         }

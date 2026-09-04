@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -151,15 +152,15 @@ class User extends Authenticatable
 
     /**
      * URL gambar tanda tangan untuk ditampilkan di halaman web.
-     * Memakai asset() — sama seperti lampiran cuti — supaya alamatnya ikut
-     * host dan port yang sedang dipakai. Storage::url() memakai APP_URL,
-     * jadi gambar gagal tampil saat aplikasi dijalankan lewat
-     * `php artisan serve` (port 8000) sementara APP_URL masih localhost.
+     * Memakai Storage::disk('public')->url() supaya otomatis mengikuti
+     * disk yang sedang aktif -- disk lokal (asset('storage/...')) di
+     * pengembangan, atau URL publik R2/S3 di production saat
+     * PUBLIC_DISK_DRIVER=s3 (lihat config/filesystems.php).
      */
     public function getTandaTanganUrlAttribute(): ?string
     {
         return $this->punyaTandaTangan()
-            ? asset('storage/' . str_replace('\\', '/', $this->tanda_tangan))
+            ? Storage::disk('public')->url(str_replace('\\', '/', $this->tanda_tangan))
             : null;
     }
 

@@ -212,7 +212,7 @@
                                                 {{ $acara->lokasi ? ' · ' . $acara->lokasi : '' }}
                                             </p>
                                             @if ($acara->lampiran)
-                                                <a href="{{ asset('storage/' . $acara->lampiran) }}" target="_blank"
+                                                <a href="{{ $acara->lampiran_url }}" target="_blank"
                                                    class="inline-block mt-1 text-[11px] text-primary-600 hover:underline">
                                                     Lihat surat dinas
                                                 </a>

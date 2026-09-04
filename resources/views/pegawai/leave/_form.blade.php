@@ -169,7 +169,7 @@
                                 <div class="mt-3 flex items-center justify-between gap-3 p-3 rounded-lg bg-gray-50 border border-gray-300">
                                     <div class="min-w-0 text-xs text-gray-600">
                                         <p class="font-medium text-gray-800">Berkas saat ini</p>
-                                        <a href="{{ asset('storage/' . $lr->lampiran) }}" target="_blank"
+                                        <a href="{{ $lr->lampiran_url }}" target="_blank"
                                            class="text-primary-600 hover:underline">Lihat berkas yang sudah diunggah</a>
                                     </div>
                                     <span class="shrink-0 text-[11px] text-gray-400 text-right">
