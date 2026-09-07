@@ -9,9 +9,11 @@ class OfficeEvent extends Model
 {
     protected $fillable = [
         'user_id',
+        'dicatat_oleh_id',
         'nama_acara',
         'jenis',
         'jenis_lainnya',
+        'nomor_spt',
         'tanggal_mulai',
         'tanggal_selesai',
         'lokasi',
@@ -52,6 +54,12 @@ class OfficeEvent extends Model
         return $this->belongsTo(User::class);
     }
 
+    /** Pegawai yang menginput acara ini (bisa berbeda dari user() bila dicatatkan oleh Tata Usaha/Admin). */
+    public function dicatatOleh()
+    {
+        return $this->belongsTo(User::class, 'dicatat_oleh_id');
+    }
+
     public function getJenisLabelAttribute(): string
     {
         if ($this->jenis === 'lainnya' && filled($this->jenis_lainnya)) {
@@ -59,5 +67,16 @@ class OfficeEvent extends Model
         }
 
         return self::JENIS[$this->jenis] ?? ucfirst((string) $this->jenis);
+    }
+
+    /** Lama kegiatan dalam hari, inklusif tanggal mulai dan selesai. */
+    public function getLamaHariAttribute(): int
+    {
+        return $this->tanggal_mulai->diffInDays($this->tanggal_selesai) + 1;
+    }
+
+    public function scopeDinasLuar($query)
+    {
+        return $query->where('jenis', 'dinas_luar');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DinasLuarReportController;
 use App\Http\Controllers\Admin\LeaveBalanceController;
 use App\Http\Controllers\Admin\LeaveReportController;
 use App\Http\Controllers\Admin\UserController;
@@ -58,6 +59,18 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('reports/{leaveRequest}', [LeaveReportController::class, 'destroy'])->name('reports.destroy');
     Route::get('reports/export-excel', [LeaveReportController::class, 'exportExcel'])->name('reports.export-excel');
     Route::get('reports/export-pdf', [LeaveReportController::class, 'exportPdf'])->name('reports.export-pdf');
+});
+
+/**
+ * Rute yang bisa diakses Admin Kepegawaian MAUPUN Tata Usaha: kartu profil
+ * pegawai (dengan riwayat Dinas Luar-nya) dan rekap Riwayat Dinas Luar.
+ * Sengaja dipisah dari grup 'role:admin' di atas -- Tata Usaha tidak boleh
+ * mengelola akun pegawai (tambah/ubah/hapus), hanya melihat profil dan
+ * mencatat/merekap Dinas Luar.
+ */
+Route::middleware(['auth', 'role:admin,tata_usaha'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('pegawai/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::get('dinas-luar', [DinasLuarReportController::class, 'index'])->name('dinas-luar.index');
 });
 
 require __DIR__ . '/auth.php';

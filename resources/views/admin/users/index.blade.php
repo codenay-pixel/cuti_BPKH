@@ -86,6 +86,8 @@
                             </dl>
 
                             <div class="flex gap-2 pt-1">
+                                <a href="{{ route('admin.users.show', $user) }}"
+                                   class="flex-1 text-center px-3 py-2 rounded-lg border border-gray-300 text-xs text-gray-700">Profil</a>
                                 <a href="{{ route('admin.users.edit', $user) }}"
                                    class="flex-1 text-center px-3 py-2 rounded-lg border border-gray-300 text-xs text-gray-700">Ubah</a>
                                 @if ($user->id !== auth()->id())
@@ -157,6 +159,8 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center justify-end gap-2">
+                                            <a href="{{ route('admin.users.show', $user) }}"
+                                               class="px-2.5 py-1 rounded-md border border-gray-300 text-xs text-gray-700 hover:bg-gray-100">Profil</a>
                                             <a href="{{ route('admin.users.edit', $user) }}"
                                                class="px-2.5 py-1 rounded-md border border-gray-300 text-xs text-gray-700 hover:bg-gray-100">Ubah</a>
                                             @if ($user->id !== auth()->id())

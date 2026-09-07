@@ -58,6 +58,7 @@ class User extends Authenticatable
         'atasan_langsung' => 'Atasan Langsung',
         'atasan'          => 'Kepala Balai',
         'admin'           => 'Admin Kepegawaian',
+        'tata_usaha'      => 'Tata Usaha',
     ];
 
     public function atasan()
@@ -85,6 +86,12 @@ class User extends Authenticatable
         return $this->hasMany(OfficeEvent::class);
     }
 
+    /** Acara kalender yang diinput oleh pegawai ini atas nama pegawai lain. */
+    public function officeEventsDicatat()
+    {
+        return $this->hasMany(OfficeEvent::class, 'dicatat_oleh_id');
+    }
+
     public function isPegawai(): bool
     {
         return $this->role === 'pegawai';
@@ -109,6 +116,20 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isTataUsaha(): bool
+    {
+        return $this->role === 'tata_usaha';
+    }
+
+    /**
+     * Boleh mencatatkan acara kalender (mis. Dinas Luar) atas nama pegawai
+     * lain, dan mengakses rekap Riwayat Dinas Luar.
+     */
+    public function bisaCatatUntukOrangLain(): bool
+    {
+        return $this->isAdmin() || $this->isTataUsaha();
     }
 
     /**

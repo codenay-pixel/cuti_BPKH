@@ -205,6 +205,12 @@
                                                 {{ $acara->tanggal_selesai->translatedFormat('d M Y') }}
                                                 {{ $acara->lokasi ? ' · ' . $acara->lokasi : '' }}
                                             </p>
+                                            @if ($acara->nomor_spt)
+                                                <p class="text-[11px] text-gray-400">SPT No. {{ $acara->nomor_spt }}</p>
+                                            @endif
+                                            @if ($acara->dicatat_oleh_id && $acara->dicatat_oleh_id !== $acara->user_id)
+                                                <p class="text-[11px] text-gray-400">Dicatat oleh {{ $acara->dicatatOleh?->name }}</p>
+                                            @endif
                                             @if ($acara->lampiran)
                                                 <a href="{{ $acara->lampiran_url }}" target="_blank"
                                                    class="inline-block mt-1 text-[11px] text-primary-600 hover:underline">
@@ -213,7 +219,7 @@
                                             @endif
                                         </div>
 
-                                        @if ($acara->user_id === auth()->id() || auth()->user()->isAdmin())
+                                        @if ($acara->user_id === auth()->id() || $acara->dicatat_oleh_id === auth()->id() || auth()->user()->isAdmin())
                                             <form method="POST" action="{{ route('events.destroy', $acara) }}"
                                                   onsubmit="return confirm('Hapus acara ini dari kalender?')">
                                                 @csrf @method('DELETE')
@@ -252,7 +258,7 @@
                                     class="shrink-0 text-gray-400 hover:text-gray-600 text-2xl leading-none px-1">&times;</button>
                         </div>
 
-                        <div class="px-5 sm:px-6 py-5 space-y-4">
+                        <div class="px-5 sm:px-6 py-5 space-y-4" x-data="{ jenisPilihan: '{{ old('jenis', 'dinas_luar') }}' }">
                             <div>
                                 <label for="nama_acara" class="block text-sm font-medium text-gray-700 mb-1.5">
                                     Nama Acara <span class="text-rose-500">*</span>
@@ -263,7 +269,28 @@
                                        class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
                             </div>
 
-                            <div x-data="{ jenisPilihan: '{{ old('jenis', 'dinas_luar') }}' }">
+                            @if ($pegawaiList->isNotEmpty())
+                                <div>
+                                    <label for="pegawai_id" class="block text-sm font-medium text-gray-700 mb-1.5">Untuk Pegawai</label>
+                                    <select id="pegawai_id" name="pegawai_id"
+                                            class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
+                                        <option value="">Diri saya sendiri ({{ auth()->user()->name }})</option>
+                                        @foreach ($pegawaiList as $pegawai)
+                                            @if ($pegawai->id !== auth()->id())
+                                                <option value="{{ $pegawai->id }}" @selected(old('pegawai_id') == $pegawai->id)>
+                                                    {{ $pegawai->name }}{{ $pegawai->jabatan ? ' · ' . $pegawai->jabatan : '' }}
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Pilih pegawai lain bila Anda mencatatkan kegiatan atas nama mereka, misalnya dinas luar berdasarkan Surat Perintah Tugas.
+                                    </p>
+                                    @error('pegawai_id') <p class="text-rose-600 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
+                            @endif
+
+                            <div>
                                 <label for="jenis" class="block text-sm font-medium text-gray-700 mb-1.5">Jenis Kegiatan</label>
                                 <select id="jenis" name="jenis" x-model="jenisPilihan"
                                         class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
@@ -281,6 +308,21 @@
                                            :required="jenisPilihan === 'lainnya'"
                                            class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
                                     @error('jenis_lainnya')
+                                        <p class="text-xs text-rose-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div x-show="jenisPilihan === 'dinas_luar'" x-cloak class="mt-2">
+                                    <label for="nomor_spt" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                        Nomor SPT <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" id="nomor_spt" name="nomor_spt" maxlength="50"
+                                           value="{{ old('nomor_spt') }}"
+                                           :required="jenisPilihan === 'dinas_luar'"
+                                           placeholder="Contoh: 094/SPT/BPKH-XII/VIII/2026"
+                                           class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
+                                    <p class="text-xs text-gray-500 mt-1">Nomor Surat Perintah Tugas untuk kegiatan dinas luar ini.</p>
+                                    @error('nomor_spt')
                                         <p class="text-xs text-rose-600 mt-1">{{ $message }}</p>
                                     @enderror
                                 </div>

@@ -65,6 +65,7 @@ class CalendarController extends Controller
                     'nama'     => $a->user->name,
                     'judul'    => $a->nama_acara,
                     'ket'      => trim(($a->lokasi ? $a->lokasi . ' · ' : '') . $a->jenis_label
+                                  . ($a->nomor_spt ? ' · SPT ' . $a->nomor_spt : '')
                                   . ' · ' . $a->tanggal_mulai->translatedFormat('d M')
                                   . ' s/d ' . $a->tanggal_selesai->translatedFormat('d M Y')),
                     'lampiran' => $a->lampiran_url,
@@ -84,9 +85,15 @@ class CalendarController extends Controller
             ->limit(10)
             ->get();
 
+        // Hanya Tata Usaha dan Admin yang boleh mencatatkan acara atas nama
+        // pegawai lain, jadi daftar pegawai ini hanya perlu dikirim untuk mereka.
+        $pegawaiList = $request->user()->bisaCatatUntukOrangLain()
+            ? \App\Models\User::orderBy('name')->get(['id', 'name', 'jabatan'])
+            : collect();
+
         return view('calendar.index', compact(
             'awalBulan', 'akhirBulan', 'awalGrid', 'akhirGrid',
-            'agenda', 'tanggalAwal', 'acaraMendatang', 'bulan', 'tahun'
+            'agenda', 'tanggalAwal', 'acaraMendatang', 'bulan', 'tahun', 'pegawaiList'
         ));
     }
 }

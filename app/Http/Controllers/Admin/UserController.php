@@ -53,6 +53,36 @@ class UserController extends Controller
         return view('admin.users.create', compact('atasanList'));
     }
 
+    /**
+     * Kartu profil pegawai: data diri plus riwayat Dinas Luar-nya, supaya
+     * Tata Usaha/Admin bisa cek riwayat SPT seseorang tanpa harus menyaring
+     * dari daftar rekap.
+     */
+    public function show(User $user)
+    {
+        $tahun = now()->year;
+        $bulanIni = now()->month;
+
+        $riwayatDinasLuar = $user->officeEvents()
+            ->dinasLuar()
+            ->orderByDesc('tanggal_mulai')
+            ->limit(10)
+            ->get();
+
+        $dinasLuarBulanIni = $user->officeEvents()
+            ->dinasLuar()
+            ->whereYear('tanggal_mulai', $tahun)
+            ->whereMonth('tanggal_mulai', $bulanIni)
+            ->get();
+
+        return view('admin.users.show', [
+            'user'              => $user,
+            'riwayatDinasLuar'  => $riwayatDinasLuar,
+            'jumlahBulanIni'    => $dinasLuarBulanIni->count(),
+            'totalHariBulanIni' => $dinasLuarBulanIni->sum->lama_hari,
+        ]);
+    }
+
     public function store(StoreUserRequest $request)
     {
         $data = $request->validated();

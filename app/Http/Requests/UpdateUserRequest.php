@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,7 +21,7 @@ class UpdateUserRequest extends FormRequest
             'nip' => ['required', 'digits_between:8,18', Rule::unique('users', 'nip')->ignore($userId)],
             'email' => ['nullable', 'email', Rule::unique('users', 'email')->ignore($userId)],
             'password' => ['nullable', 'string', 'min:8'],
-            'role' => ['required', 'in:pegawai,atasan_langsung,atasan,admin'],
+            'role' => ['required', 'in:pegawai,atasan_langsung,atasan,admin,tata_usaha'],
             'jabatan' => ['nullable', 'string', 'max:255'],
             'unit_kerja' => ['nullable', 'string', 'max:255'],
             'tmt_pns' => ['nullable', 'date'],
@@ -30,11 +29,6 @@ class UpdateUserRequest extends FormRequest
             'atasan_id' => ['nullable', 'exists:users,id'],
             'tanda_tangan' => ['nullable', 'image', 'mimes:png,jpg,jpeg', 'max:2048'],
             'hapus_tanda_tangan' => ['nullable', 'boolean'],
-            'tanda_tangan_skala' => [
-                'nullable', 'integer',
-                'between:' . User::TTD_SKALA_MIN . ',' . User::TTD_SKALA_MAX,
-            ],
-            'is_plh_kepala_balai' => ['nullable', 'boolean'],
         ];
     }
 
@@ -52,8 +46,6 @@ class UpdateUserRequest extends FormRequest
             'nip.unique' => 'NIP ini sudah terdaftar.',
             'tanda_tangan.image' => 'Berkas tanda tangan harus berupa gambar (PNG atau JPG).',
             'tanda_tangan.max' => 'Ukuran gambar tanda tangan maksimal 2 MB.',
-            'tanda_tangan_skala.between' => 'Ukuran cetak tanda tangan harus antara '
-                . User::TTD_SKALA_MIN . '% dan ' . User::TTD_SKALA_MAX . '%.',
         ];
     }
 }

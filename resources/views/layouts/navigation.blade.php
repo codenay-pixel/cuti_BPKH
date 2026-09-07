@@ -54,6 +54,12 @@
                             Rekap
                         </x-nav-link>
                     @endif
+
+                    @if ($u->isAdmin() || $u->isTataUsaha())
+                        <x-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">
+                            Riwayat Dinas Luar
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -123,6 +129,10 @@
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">Kelola Pegawai</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.leave-balances.index')" :active="request()->routeIs('admin.leave-balances.*')">Saldo Cuti</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">Rekap</x-responsive-nav-link>
+            @endif
+
+            @if ($u->isAdmin() || $u->isTataUsaha())
+                <x-responsive-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">Riwayat Dinas Luar</x-responsive-nav-link>
             @endif
         </div>
 
