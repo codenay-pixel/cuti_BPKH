@@ -47,37 +47,59 @@
                         @php
                             $diMenuKepegawaian = request()->routeIs('admin.users.*', 'admin.leave-balances.*', 'admin.reports.*', 'admin.dinas-luar.*');
                         @endphp
-                        <x-dropdown align="left" width="w-64">
-                            <x-slot name="trigger">
-                                <button type="button"
-                                        class="inline-flex items-center gap-1 px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none
-                                               {{ $diMenuKepegawaian
-                                                    ? 'border-primary-400 text-gray-900'
-                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
-                                    Kepegawaian
-                                    <x-ikon nama="panah-bawah" kelas="w-3.5 h-3.5" />
-                                </button>
-                            </x-slot>
+                        {{--
+                            Sengaja tidak memakai <x-dropdown> di sini. Komponen itu
+                            membungkus trigger dalam <div> polos (bukan flex), jadi di
+                            dalam baris menu yang di-stretch (default align-items:
+                            stretch bawaan flexbox), tombolnya jadi menempel ke ATAS
+                            kotak yang di-stretch alih-alih ikut turun sejajar seperti
+                            <x-nav-link> lain -- itu sebab "Kepegawaian" terlihat naik
+                            sendiri. Di sini wrapper-nya dibuat inline-flex supaya
+                            tombolnya ikut di-stretch penuh, lalu items-center pada
+                            tombol sendiri yang menengahkan tulisannya -- pola yang
+                            sama persis dipakai <x-nav-link>.
+                        --}}
+                        <div class="relative inline-flex" x-data="{ menuKepegawaian: false }"
+                             @click.outside="menuKepegawaian = false" @keydown.escape.window="menuKepegawaian = false">
+                            <button type="button" @click="menuKepegawaian = ! menuKepegawaian"
+                                    class="inline-flex items-center gap-1 px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none
+                                           {{ $diMenuKepegawaian
+                                                ? 'border-primary-400 text-gray-900'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                                Kepegawaian
+                                <x-ikon nama="panah-bawah" kelas="w-3.5 h-3.5" />
+                            </button>
 
-                            <x-slot name="content">
-                                <x-dropdown-link :href="route('admin.users.index')" class="flex items-center gap-3 !py-2.5">
-                                    <x-ikon nama="pegawai" kelas="w-4 h-4 text-gray-400 shrink-0" />
-                                    Kelola Pegawai
-                                </x-dropdown-link>
-                                <x-dropdown-link :href="route('admin.leave-balances.index')" class="flex items-center gap-3 !py-2.5">
-                                    <x-ikon nama="saldo" kelas="w-4 h-4 text-gray-400 shrink-0" />
-                                    Saldo Cuti
-                                </x-dropdown-link>
-                                <x-dropdown-link :href="route('admin.reports.index')" class="flex items-center gap-3 !py-2.5">
-                                    <x-ikon nama="rekap" kelas="w-4 h-4 text-gray-400 shrink-0" />
-                                    Rekap Cuti
-                                </x-dropdown-link>
-                                <x-dropdown-link :href="route('admin.dinas-luar.index')" class="flex items-center gap-3 !py-2.5">
-                                    <x-ikon nama="riwayat" kelas="w-4 h-4 text-gray-400 shrink-0" />
-                                    Riwayat Dinas Luar
-                                </x-dropdown-link>
-                            </x-slot>
-                        </x-dropdown>
+                            <div x-show="menuKepegawaian"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute z-50 top-full mt-2 w-64 rounded-md shadow-lg ltr:origin-top-left rtl:origin-top-right start-0"
+                                 style="display: none;"
+                                 @click="menuKepegawaian = false">
+                                <div class="rounded-md ring-1 ring-black ring-opacity-5 bg-white py-1 divide-y divide-gray-100">
+                                    <x-dropdown-link :href="route('admin.users.index')" class="flex items-center gap-3 !py-2.5">
+                                        <x-ikon nama="pegawai" kelas="w-4 h-4 text-gray-400 shrink-0" />
+                                        Kelola Pegawai
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.leave-balances.index')" class="flex items-center gap-3 !py-2.5">
+                                        <x-ikon nama="saldo" kelas="w-4 h-4 text-gray-400 shrink-0" />
+                                        Saldo Cuti
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.reports.index')" class="flex items-center gap-3 !py-2.5">
+                                        <x-ikon nama="rekap" kelas="w-4 h-4 text-gray-400 shrink-0" />
+                                        Rekap Cuti
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.dinas-luar.index')" class="flex items-center gap-3 !py-2.5">
+                                        <x-ikon nama="riwayat" kelas="w-4 h-4 text-gray-400 shrink-0" />
+                                        Riwayat Dinas Luar
+                                    </x-dropdown-link>
+                                </div>
+                            </div>
+                        </div>
                     @elseif ($u->isTataUsaha())
                         <x-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">
                             Riwayat Dinas Luar
