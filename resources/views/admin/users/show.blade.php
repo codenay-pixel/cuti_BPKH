@@ -62,7 +62,7 @@
             <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-300 bg-gray-50 flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h3 class="text-sm font-semibold text-gray-800">Riwayat Dinas Luar</h3>
+                        <h3 class="text-sm font-semibold text-gray-800">Riwayat Kegiatan</h3>
                         <p class="text-xs text-gray-500 mt-0.5">10 kegiatan terbaru</p>
                     </div>
                     <div class="flex items-center gap-4">

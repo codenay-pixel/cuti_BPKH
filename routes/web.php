@@ -63,7 +63,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 /**
  * Rute yang bisa diakses Admin Kepegawaian MAUPUN Tata Usaha: kartu profil
- * pegawai (dengan riwayat Dinas Luar-nya) dan rekap Riwayat Dinas Luar.
+ * pegawai (dengan riwayat kegiatannya) dan halaman Riwayat Kegiatan.
  * Sengaja dipisah dari grup 'role:admin' di atas -- Tata Usaha tidak boleh
  * mengelola akun pegawai (tambah/ubah/hapus), hanya melihat profil dan
  * mencatat/merekap Dinas Luar.

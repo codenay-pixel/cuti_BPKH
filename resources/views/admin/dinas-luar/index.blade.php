@@ -2,14 +2,14 @@
     <x-slot name="header">
         <div>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
-                Riwayat Dinas Luar
+                Riwayat Kegiatan
                 @unless ($tahunIniBerjalan)
                     <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold">
                         Arsip {{ $tahun }}
                     </span>
                 @endunless
             </h2>
-            <p class="text-sm text-gray-500 mt-0.5">Rekap kegiatan Dinas Luar / SPT tiap pegawai</p>
+            <p class="text-sm text-gray-500 mt-0.5">Rekap kegiatan pegawai</p>
         </div>
     </x-slot>
 

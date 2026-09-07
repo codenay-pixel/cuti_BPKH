@@ -125,7 +125,7 @@ class User extends Authenticatable
 
     /**
      * Boleh mencatatkan acara kalender (mis. Dinas Luar) atas nama pegawai
-     * lain, dan mengakses rekap Riwayat Dinas Luar.
+     * lain, dan mengakses halaman Riwayat Kegiatan.
      */
     public function bisaCatatUntukOrangLain(): bool
     {

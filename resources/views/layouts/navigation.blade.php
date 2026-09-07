@@ -95,14 +95,14 @@
                                     </x-dropdown-link>
                                     <x-dropdown-link :href="route('admin.dinas-luar.index')" class="flex items-center gap-3 !py-2.5">
                                         <x-ikon nama="riwayat" kelas="w-4 h-4 text-gray-400 shrink-0" />
-                                        Riwayat Dinas Luar
+                                        Riwayat Kegiatan
                                     </x-dropdown-link>
                                 </div>
                             </div>
                         </div>
                     @elseif ($u->isTataUsaha())
                         <x-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">
-                            Riwayat Dinas Luar
+                            Riwayat Kegiatan
                         </x-nav-link>
                     @endif
                 </div>
@@ -175,9 +175,9 @@
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">Kelola Pegawai</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.leave-balances.index')" :active="request()->routeIs('admin.leave-balances.*')">Saldo Cuti</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">Rekap Cuti</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">Riwayat Dinas Luar</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">Riwayat Kegiatan</x-responsive-nav-link>
             @elseif ($u->isTataUsaha())
-                <x-responsive-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">Riwayat Dinas Luar</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">Riwayat Kegiatan</x-responsive-nav-link>
             @endif
         </div>
 
