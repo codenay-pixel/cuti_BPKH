@@ -44,18 +44,41 @@
                     @endif
 
                     @if ($u->isAdmin())
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                            Kelola Pegawai
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.leave-balances.index')" :active="request()->routeIs('admin.leave-balances.*')">
-                            Saldo Cuti
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">
-                            Rekap
-                        </x-nav-link>
-                    @endif
+                        @php
+                            $diMenuKepegawaian = request()->routeIs('admin.users.*', 'admin.leave-balances.*', 'admin.reports.*', 'admin.dinas-luar.*');
+                        @endphp
+                        <x-dropdown align="left" width="w-64">
+                            <x-slot name="trigger">
+                                <button type="button"
+                                        class="inline-flex items-center gap-1 px-1 pt-1 border-b-2 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none
+                                               {{ $diMenuKepegawaian
+                                                    ? 'border-primary-400 text-gray-900'
+                                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' }}">
+                                    Kepegawaian
+                                    <x-ikon nama="panah-bawah" kelas="w-3.5 h-3.5" />
+                                </button>
+                            </x-slot>
 
-                    @if ($u->isAdmin() || $u->isTataUsaha())
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('admin.users.index')" class="flex items-center gap-3 !py-2.5">
+                                    <x-ikon nama="pegawai" kelas="w-4 h-4 text-gray-400 shrink-0" />
+                                    Kelola Pegawai
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.leave-balances.index')" class="flex items-center gap-3 !py-2.5">
+                                    <x-ikon nama="saldo" kelas="w-4 h-4 text-gray-400 shrink-0" />
+                                    Saldo Cuti
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.reports.index')" class="flex items-center gap-3 !py-2.5">
+                                    <x-ikon nama="rekap" kelas="w-4 h-4 text-gray-400 shrink-0" />
+                                    Rekap Cuti
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('admin.dinas-luar.index')" class="flex items-center gap-3 !py-2.5">
+                                    <x-ikon nama="riwayat" kelas="w-4 h-4 text-gray-400 shrink-0" />
+                                    Riwayat Dinas Luar
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    @elseif ($u->isTataUsaha())
                         <x-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">
                             Riwayat Dinas Luar
                         </x-nav-link>
@@ -126,12 +149,12 @@
             @endif
 
             @if ($u->isAdmin())
+                <p class="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Kepegawaian</p>
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">Kelola Pegawai</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.leave-balances.index')" :active="request()->routeIs('admin.leave-balances.*')">Saldo Cuti</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">Rekap</x-responsive-nav-link>
-            @endif
-
-            @if ($u->isAdmin() || $u->isTataUsaha())
+                <x-responsive-nav-link :href="route('admin.reports.index')" :active="request()->routeIs('admin.reports.*')">Rekap Cuti</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">Riwayat Dinas Luar</x-responsive-nav-link>
+            @elseif ($u->isTataUsaha())
                 <x-responsive-nav-link :href="route('admin.dinas-luar.index')" :active="request()->routeIs('admin.dinas-luar.*')">Riwayat Dinas Luar</x-responsive-nav-link>
             @endif
         </div>
