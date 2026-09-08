@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LeaveApproval;
 use App\Models\LeaveRequest;
 use App\Models\User;
+use App\Support\Audit;
 use Illuminate\Http\Request;
 
 class ApprovalController extends Controller
@@ -54,6 +55,12 @@ class ApprovalController extends Controller
             'current_approver_id' => $pejabatPemberiCuti->id,
         ]);
 
+        Audit::catat('cuti.disetujui_atasan', [
+            'leave_request_id' => $leaveRequest->id,
+            'pegawai_id'       => $leaveRequest->user_id,
+            'diteruskan_ke'    => $pejabatPemberiCuti->id,
+        ]);
+
         return back()->with('success', 'Cuti disetujui dan diteruskan ke ' . $pejabatPemberiCuti->name . '.');
     }
 
@@ -76,6 +83,12 @@ class ApprovalController extends Controller
         ]);
 
         $leaveRequest->update(['status' => 'ditolak', 'current_approver_id' => null]);
+
+        Audit::catat('cuti.ditolak_atasan', [
+            'leave_request_id' => $leaveRequest->id,
+            'pegawai_id'       => $leaveRequest->user_id,
+            'catatan'          => $request->catatan,
+        ]);
 
         return back()->with('success', 'Pengajuan cuti ditolak.');
     }

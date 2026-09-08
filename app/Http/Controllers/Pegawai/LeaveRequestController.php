@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\User;
 use App\Services\LeaveService;
+use App\Support\Audit;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -59,11 +60,18 @@ class LeaveRequestController extends Controller
     public function store(StoreLeaveRequest $request)
     {
         try {
-            $this->leaveService->ajukanCuti(
+            $leaveRequest = $this->leaveService->ajukanCuti(
                 $request->validated(),
                 $request->user(),
                 $request->file('lampiran')
             );
+
+            Audit::catat('cuti.diajukan', [
+                'leave_request_id' => $leaveRequest->id,
+                'leave_type_id'    => $leaveRequest->leave_type_id,
+                'tanggal_mulai'    => (string) $leaveRequest->tanggal_mulai,
+                'tanggal_selesai'  => (string) $leaveRequest->tanggal_selesai,
+            ]);
 
             return redirect()->route('leave.index')
                 ->with('success', 'Pengajuan cuti berhasil dikirim ke atasan langsung Anda.');
@@ -110,6 +118,8 @@ class LeaveRequestController extends Controller
                 $request->validated(),
                 $request->file('lampiran')
             );
+
+            Audit::catat('cuti.diubah', ['leave_request_id' => $leaveRequest->id]);
 
             return redirect()->route('leave.show', $leaveRequest)
                 ->with('success', 'Perubahan pengajuan cuti berhasil disimpan.');
@@ -188,6 +198,8 @@ class LeaveRequestController extends Controller
         if ($leaveRequest->lampiran) {
             Storage::disk('public')->delete($leaveRequest->lampiran);
         }
+
+        Audit::catat('cuti.dibatalkan', ['leave_request_id' => $leaveRequest->id]);
 
         $leaveRequest->delete();
 

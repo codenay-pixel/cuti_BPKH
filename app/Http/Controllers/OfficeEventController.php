@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOfficeEventRequest;
 use App\Models\OfficeEvent;
+use App\Support\Audit;
 use Illuminate\Support\Facades\Storage;
 
 class OfficeEventController extends Controller
@@ -29,7 +30,14 @@ class OfficeEventController extends Controller
 
         unset($data['pegawai_id']);
 
-        OfficeEvent::create($data);
+        $acara = OfficeEvent::create($data);
+
+        Audit::catat('acara.dicatat', [
+            'office_event_id' => $acara->id,
+            'pegawai_id'      => $acara->user_id,
+            'jenis'           => $acara->jenis,
+            'atas_nama_orang_lain' => $acara->user_id !== $request->user()->id,
+        ]);
 
         return redirect()
             ->route('calendar.index', [
@@ -53,6 +61,11 @@ class OfficeEventController extends Controller
         if ($officeEvent->lampiran) {
             Storage::disk('public')->delete($officeEvent->lampiran);
         }
+
+        Audit::catat('acara.dihapus', [
+            'office_event_id' => $officeEvent->id,
+            'pegawai_id'      => $officeEvent->user_id,
+        ]);
 
         $officeEvent->delete();
 

@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Services\LeaveService;
+use App\Support\Audit;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -30,6 +31,13 @@ class LeaveReportController extends Controller
         if ($leaveRequest->lampiran) {
             Storage::disk('public')->delete($leaveRequest->lampiran);
         }
+
+        Audit::catat('cuti.dihapus_admin', [
+            'leave_request_id' => $leaveRequest->id,
+            'pegawai_id'       => $leaveRequest->user_id,
+            'nama'             => $nama,
+            'saldo_dikembalikan' => $dikembalikan,
+        ]);
 
         $leaveRequest->delete();
 

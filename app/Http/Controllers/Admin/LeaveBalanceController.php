@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LeaveBalance;
 use App\Models\User;
 use App\Services\LeaveService;
+use App\Support\Audit;
 use Illuminate\Http\Request;
 
 class LeaveBalanceController extends Controller
@@ -109,6 +110,12 @@ class LeaveBalanceController extends Controller
                 ['jatah' => (int) $nilai['jatah'], 'terpakai' => (int) $nilai['terpakai']],
             );
         }
+
+        Audit::catat('saldo_cuti.diubah', [
+            'pegawai_id' => $user->id,
+            'nama'       => $user->name,
+            'tahun'      => $data['tahun'],
+        ]);
 
         return redirect()
             ->route('admin.leave-balances.index')

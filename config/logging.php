@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -35,6 +36,26 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
+        ],
+
+        /**
+         * Kanal khusus jejak audit ("siapa ngapain, kapan") -- dipakai lewat
+         * App\Support\Audit::catat(...) di controller-controller yang
+         * mengubah data penting (pengajuan/persetujuan cuti, kelola pegawai,
+         * kegiatan/Dinas Luar). Sengaja dipisah dari log error/debug bawaan
+         * Laravel (kanal 'single'/'daily' di atas) dan ditulis dalam format
+         * JSON terstruktur (bukan teks biasa) supaya gampang ditelusuri atau
+         * di-filter kalau suatu saat perlu investigasi -- request_id, ip,
+         * user_agent, dan siapa yang login otomatis ikut ke setiap baris
+         * lewat App\Logging\TambahKonteksAudit.
+         */
+        'audit' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/audit.log'),
+            'level' => 'info',
+            'days' => env('LOG_AUDIT_DAYS', 90),
+            'formatter' => JsonFormatter::class,
+            'tap' => [\App\Logging\TambahKonteksAudit::class],
         ],
 
         'slack' => [

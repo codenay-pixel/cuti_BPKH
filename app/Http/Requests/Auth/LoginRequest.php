@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Support\Audit;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -72,6 +73,8 @@ class LoginRequest extends FormRequest
         if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
+            Audit::catat('auth.login_gagal', ['nip' => $this->input('nip')]);
+
             throw ValidationException::withMessages([
                 'nip' => 'NIP atau password yang Anda masukkan salah.',
             ]);
@@ -90,6 +93,8 @@ class LoginRequest extends FormRequest
         }
 
         event(new Lockout($this));
+
+        Audit::catat('auth.login_lockout', ['nip' => $this->input('nip')]);
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
