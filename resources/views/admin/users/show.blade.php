@@ -89,7 +89,7 @@
                                         {{ $acara->tanggal_selesai->translatedFormat('d M Y') }}
                                     </p>
                                     @if ($acara->nomor_spt)
-                                        <p class="text-[11px] text-gray-400">SPT No. {{ $acara->nomor_spt }}</p>
+                                        <p class="text-[11px] text-gray-400">No. Surat {{ $acara->nomor_spt }}</p>
                                     @endif
                                     @if ($acara->dicatat_oleh_id && $acara->dicatat_oleh_id !== $acara->user_id)
                                         <p class="text-[11px] text-gray-400">Dicatat oleh {{ $acara->dicatatOleh?->name }}</p>

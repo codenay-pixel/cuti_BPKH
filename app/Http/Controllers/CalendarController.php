@@ -65,7 +65,7 @@ class CalendarController extends Controller
                     'nama'     => $a->user->name,
                     'judul'    => $a->nama_acara,
                     'ket'      => trim(($a->lokasi ? $a->lokasi . ' · ' : '') . $a->jenis_label
-                                  . ($a->nomor_spt ? ' · SPT ' . $a->nomor_spt : '')
+                                  . ($a->nomor_spt ? ' · Surat ' . $a->nomor_spt : '')
                                   . ' · ' . $a->tanggal_mulai->translatedFormat('d M')
                                   . ' s/d ' . $a->tanggal_selesai->translatedFormat('d M Y')),
                     'lampiran' => $a->lampiran_url,

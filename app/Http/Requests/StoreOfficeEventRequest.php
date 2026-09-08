@@ -32,7 +32,7 @@ class StoreOfficeEventRequest extends FormRequest
         return [
             'nama_acara.required'          => 'Nama acara wajib diisi.',
             'jenis_lainnya.required_if'    => 'Sebutkan jenis kegiatannya.',
-            'nomor_spt.required_if'        => 'Nomor SPT wajib diisi untuk kegiatan Dinas Luar.',
+            'nomor_spt.required_if'        => 'Nomor Surat wajib diisi untuk kegiatan Dinas Luar.',
             'pegawai_id.exists'            => 'Pegawai yang dipilih tidak ditemukan.',
             'tanggal_mulai.required'       => 'Tanggal mulai wajib diisi.',
             'tanggal_selesai.after_or_equal' => 'Tanggal selesai tidak boleh sebelum tanggal mulai.',

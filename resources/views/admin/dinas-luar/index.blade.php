@@ -103,7 +103,7 @@
                                 {{ $item->tanggal_selesai->translatedFormat('d M Y') }}
                             </p>
                             @if ($item->nomor_spt)
-                                <p class="text-xs text-gray-500">SPT No. {{ $item->nomor_spt }}</p>
+                                <p class="text-xs text-gray-500">No. Surat {{ $item->nomor_spt }}</p>
                             @endif
                             @if ($item->dicatat_oleh_id && $item->dicatat_oleh_id !== $item->user_id)
                                 <p class="text-[11px] text-gray-400">Dicatat oleh {{ $item->dicatatOleh?->name }}</p>
@@ -119,7 +119,7 @@
                         <thead>
                             <tr class="bg-gray-200 text-gray-700 text-xs uppercase tracking-wide">
                                 <th class="px-4 py-3 text-left font-semibold">Pegawai</th>
-                                <th class="px-4 py-3 text-left font-semibold">Nomor SPT</th>
+                                <th class="px-4 py-3 text-left font-semibold">Nomor Surat</th>
                                 <th class="px-4 py-3 text-left font-semibold">Tanggal Mulai</th>
                                 <th class="px-4 py-3 text-left font-semibold">Tanggal Selesai</th>
                                 <th class="px-4 py-3 text-center font-semibold">Lama</th>

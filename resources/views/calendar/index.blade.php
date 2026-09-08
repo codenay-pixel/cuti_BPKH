@@ -206,7 +206,7 @@
                                                 {{ $acara->lokasi ? ' · ' . $acara->lokasi : '' }}
                                             </p>
                                             @if ($acara->nomor_spt)
-                                                <p class="text-[11px] text-gray-400">SPT No. {{ $acara->nomor_spt }}</p>
+                                                <p class="text-[11px] text-gray-400">No. Surat {{ $acara->nomor_spt }}</p>
                                             @endif
                                             @if ($acara->dicatat_oleh_id && $acara->dicatat_oleh_id !== $acara->user_id)
                                                 <p class="text-[11px] text-gray-400">Dicatat oleh {{ $acara->dicatatOleh?->name }}</p>
@@ -359,14 +359,14 @@
 
                                 <div x-show="jenisPilihan === 'dinas_luar'" x-cloak class="mt-2">
                                     <label for="nomor_spt" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                        Nomor SPT <span class="text-rose-500">*</span>
+                                        Nomor Surat <span class="text-rose-500">*</span>
                                     </label>
                                     <input type="text" id="nomor_spt" name="nomor_spt" maxlength="50"
                                            value="{{ old('nomor_spt') }}"
                                            :required="jenisPilihan === 'dinas_luar'"
                                            placeholder="Contoh: 094/SPT/BPKH-XII/VIII/2026"
                                            class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
-                                    <p class="text-xs text-gray-500 mt-1">Nomor Surat Perintah Tugas untuk kegiatan dinas luar ini.</p>
+                                    <p class="text-xs text-gray-500 mt-1">Nomor surat (mis. Surat Perintah Tugas) untuk kegiatan dinas luar ini.</p>
                                     @error('nomor_spt')
                                         <p class="text-xs text-rose-600 mt-1">{{ $message }}</p>
                                     @enderror
