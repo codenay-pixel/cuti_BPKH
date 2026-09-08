@@ -15,7 +15,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
 
-Route::middleware('auth')->group(function () {
+/*
+ * Batas request (throttle) ditambahkan di semua grup rute di bawah ini --
+ * sebelumnya cuma halaman login yang dilindungi (lewat LoginRequest).
+ * Angkanya sengaja longgar (jauh di atas pemakaian wajar sehari-hari) supaya
+ * tidak mengganggu pengguna biasa, tujuannya cuma menahan permintaan
+ * bertubi-tubi yang gak wajar (mis. dibanjiri lewat script).
+ */
+Route::middleware(['auth', 'throttle:120,1'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -37,19 +44,19 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-Route::middleware(['auth', 'role:atasan_langsung'])->prefix('approval')->name('approval.')->group(function () {
+Route::middleware(['auth', 'role:atasan_langsung', 'throttle:60,1'])->prefix('approval')->name('approval.')->group(function () {
     Route::get('/', [AtasanApprovalController::class, 'index'])->name('index');
     Route::post('/{leaveRequest}/setujui', [AtasanApprovalController::class, 'approve'])->name('approve');
     Route::post('/{leaveRequest}/tolak', [AtasanApprovalController::class, 'reject'])->name('reject');
 });
 
-Route::middleware(['auth', 'kepala_balai'])->prefix('kepala-balai/approval')->name('kepala-balai.approval.')->group(function () {
+Route::middleware(['auth', 'kepala_balai', 'throttle:60,1'])->prefix('kepala-balai/approval')->name('kepala-balai.approval.')->group(function () {
     Route::get('/', [KepalaBalaiApprovalController::class, 'index'])->name('index');
     Route::post('/{leaveRequest}/setujui', [KepalaBalaiApprovalController::class, 'approve'])->name('approve');
     Route::post('/{leaveRequest}/tolak', [KepalaBalaiApprovalController::class, 'reject'])->name('reject');
 });
 
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin', 'throttle:100,1'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class)->except('show');
 
     Route::get('saldo-cuti', [LeaveBalanceController::class, 'index'])->name('leave-balances.index');
@@ -68,14 +75,17 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
  * mengelola akun pegawai (tambah/ubah/hapus), hanya melihat profil dan
  * mencatat/merekap Dinas Luar.
  */
-Route::middleware(['auth', 'role:admin,tata_usaha'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin,tata_usaha', 'throttle:100,1'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('pegawai/{user}', [UserController::class, 'show'])->name('users.show');
     Route::get('dinas-luar', [DinasLuarReportController::class, 'index'])->name('dinas-luar.index');
 });
 
 require __DIR__ . '/auth.php';
 
-Route::get('/system/backup/{token}', function (string $token) {
+// Rute publik (tanpa login) yang dilindungi token rahasia, bukan sesi --
+// tetap diberi throttle sebagai lapisan tambahan supaya token-nya tidak
+// gampang ditebak lewat percobaan bertubi-tubi.
+Route::middleware('throttle:20,1')->get('/system/backup/{token}', function (string $token) {
     $expected = (string) config('app.backup_token');
 
     if ($expected === '' || ! hash_equals($expected, $token)) {
