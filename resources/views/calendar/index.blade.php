@@ -261,7 +261,7 @@
                         <div class="px-5 sm:px-6 py-5 space-y-4"
                              x-data="{
                                 jenisPilihan: '{{ old('jenis', 'dinas_luar') }}',
-                                daftarPegawai: @json($pegawaiList->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'unit_kerja' => $p->unit_kerja ?: ''])),
+                                daftarPegawai: {{ Illuminate\Support\Js::from($pegawaiList->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'unit_kerja' => $p->unit_kerja ?: ''])) }},
                                 pegawaiId: '{{ old('pegawai_id', '') }}',
                                 unitTerpilih: '',
                                 init() {
