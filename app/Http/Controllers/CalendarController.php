@@ -86,9 +86,15 @@ class CalendarController extends Controller
             ->get();
 
         // Hanya Tata Usaha dan Admin yang boleh mencatatkan acara atas nama
-        // pegawai lain, jadi daftar pegawai ini hanya perlu dikirim untuk mereka.
+        // pegawai lain, jadi daftar pegawai ini hanya perlu dikirim untuk
+        // mereka. Diri sendiri dikeluarkan dari daftar karena sudah jadi
+        // pilihan bawaan ("Diri saya sendiri") di form-nya. unit_kerja ikut
+        // diambil supaya pemilihan pegawai bisa disaring per unit kerja dulu
+        // -- daftar pegawai penuh bisa sangat panjang kalau langsung ditampilkan.
         $pegawaiList = $request->user()->bisaCatatUntukOrangLain()
-            ? \App\Models\User::orderBy('name')->get(['id', 'name', 'jabatan'])
+            ? \App\Models\User::where('id', '!=', $request->user()->id)
+                ->orderBy('name')
+                ->get(['id', 'name', 'jabatan', 'unit_kerja'])
             : collect();
 
         return view('calendar.index', compact(

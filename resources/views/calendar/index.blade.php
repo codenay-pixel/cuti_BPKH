@@ -258,7 +258,30 @@
                                     class="shrink-0 text-gray-400 hover:text-gray-600 text-2xl leading-none px-1">&times;</button>
                         </div>
 
-                        <div class="px-5 sm:px-6 py-5 space-y-4" x-data="{ jenisPilihan: '{{ old('jenis', 'dinas_luar') }}' }">
+                        <div class="px-5 sm:px-6 py-5 space-y-4"
+                             x-data="{
+                                jenisPilihan: '{{ old('jenis', 'dinas_luar') }}',
+                                daftarPegawai: @json($pegawaiList->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'unit_kerja' => $p->unit_kerja ?: ''])),
+                                pegawaiId: '{{ old('pegawai_id', '') }}',
+                                unitTerpilih: '',
+                                init() {
+                                    if (this.pegawaiId) {
+                                        const p = this.daftarPegawai.find(x => String(x.id) === String(this.pegawaiId));
+                                        if (p) this.unitTerpilih = p.unit_kerja || '__tanpa_unit';
+                                    }
+                                },
+                                get daftarUnitKerja() {
+                                    const set = new Set(this.daftarPegawai.map(p => p.unit_kerja || '__tanpa_unit'));
+                                    return Array.from(set).sort((a, b) => {
+                                        if (a === '__tanpa_unit') return 1;
+                                        if (b === '__tanpa_unit') return -1;
+                                        return a.localeCompare(b);
+                                    });
+                                },
+                                get pegawaiTersaring() {
+                                    return this.daftarPegawai.filter(p => (p.unit_kerja || '__tanpa_unit') === this.unitTerpilih);
+                                },
+                             }">
                             <div>
                                 <label for="nama_acara" class="block text-sm font-medium text-gray-700 mb-1.5">
                                     Nama Acara <span class="text-rose-500">*</span>
@@ -270,23 +293,35 @@
                             </div>
 
                             @if ($pegawaiList->isNotEmpty())
-                                <div>
-                                    <label for="pegawai_id" class="block text-sm font-medium text-gray-700 mb-1.5">Untuk Pegawai</label>
-                                    <select id="pegawai_id" name="pegawai_id"
-                                            class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
-                                        <option value="">Diri saya sendiri ({{ auth()->user()->name }})</option>
-                                        @foreach ($pegawaiList as $pegawai)
-                                            @if ($pegawai->id !== auth()->id())
-                                                <option value="{{ $pegawai->id }}" @selected(old('pegawai_id') == $pegawai->id)>
-                                                    {{ $pegawai->name }}{{ $pegawai->jabatan ? ' · ' . $pegawai->jabatan : '' }}
-                                                </option>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        Pilih pegawai lain bila Anda mencatatkan kegiatan atas nama mereka, misalnya dinas luar berdasarkan Surat Perintah Tugas.
+                                <div class="rounded-xl border border-gray-200 bg-gray-50 p-3 space-y-3">
+                                    <p class="block text-sm font-medium text-gray-700">Dicatatkan Untuk</p>
+
+                                    <div>
+                                        <label for="unit_kerja_pilih" class="block text-xs text-gray-500 mb-1">Unit Kerja</label>
+                                        <select id="unit_kerja_pilih" x-model="unitTerpilih" @change="pegawaiId = ''"
+                                                class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
+                                            <option value="">— Diri saya sendiri ({{ auth()->user()->name }}) —</option>
+                                            <template x-for="unit in daftarUnitKerja" :key="unit">
+                                                <option :value="unit" x-text="unit === '__tanpa_unit' ? 'Tanpa Unit Kerja' : unit"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+
+                                    <div x-show="unitTerpilih !== ''" x-cloak>
+                                        <label for="pegawai_id" class="block text-xs text-gray-500 mb-1">Pegawai</label>
+                                        <select id="pegawai_id" name="pegawai_id" x-model="pegawaiId"
+                                                class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
+                                            <option value="">— Pilih pegawai —</option>
+                                            <template x-for="p in pegawaiTersaring" :key="p.id">
+                                                <option :value="p.id" x-text="p.name"></option>
+                                            </template>
+                                        </select>
+                                        @error('pegawai_id') <p class="text-rose-600 text-xs mt-1">{{ $message }}</p> @enderror
+                                    </div>
+
+                                    <p class="text-xs text-gray-500">
+                                        Pilih unit kerja pegawai yang bersangkutan dulu, lalu pilih namanya -- berguna kalau Anda mencatatkan kegiatan atas nama pegawai lain, misalnya dinas luar berdasarkan Surat Perintah Tugas.
                                     </p>
-                                    @error('pegawai_id') <p class="text-rose-600 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
                             @endif
 
