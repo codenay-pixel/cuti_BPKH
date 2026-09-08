@@ -12,14 +12,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, SoftDeletes;
 
-    /**
-     * Pegawai yang "dihapus" sebenarnya dinonaktifkan (soft delete), bukan
-     * dibuang permanen -- supaya riwayat cuti dan Dinas Luar yang sudah
-     * tercatat atas namanya tetap bisa dilihat di laporan/rekap. Akun yang
-     * dinonaktifkan otomatis tidak bisa dipakai login lagi (dikeluarkan dari
-     * pencarian User bawaan Eloquent), tapi datanya tidak hilang.
-     */
-
     protected $fillable = [
         'name',
         'nip',
@@ -52,11 +44,6 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Ukuran cetak gambar tanda tangan, dalam persen.
-     * 100% = tinggi 30px pada PDF (± 7,9 mm di kertas). Rentangnya dibatasi
-     * supaya blok tanda tangan tidak mendorong formulir menjadi dua halaman.
-     */
     public const TTD_SKALA_MIN     = 60;
     public const TTD_SKALA_MAX     = 180;
     public const TTD_SKALA_DEFAULT = 120;
@@ -70,10 +57,6 @@ class User extends Authenticatable
         'tata_usaha'      => 'Tata Usaha',
     ];
 
-    /**
-     * withTrashed() supaya nama atasan tetap muncul di data lama (mis. cetak
-     * formulir cuti, riwayat kegiatan) walau akun atasannya sudah dinonaktifkan.
-     */
     public function atasan()
     {
         return $this->belongsTo(User::class, 'atasan_id')->withTrashed();
@@ -99,7 +82,6 @@ class User extends Authenticatable
         return $this->hasMany(OfficeEvent::class);
     }
 
-    /** Acara kalender yang diinput oleh pegawai ini atas nama pegawai lain. */
     public function officeEventsDicatat()
     {
         return $this->hasMany(OfficeEvent::class, 'dicatat_oleh_id');
@@ -120,7 +102,6 @@ class User extends Authenticatable
         return $this->role === 'atasan';
     }
 
-    /** Semua peran yang bertindak sebagai pemberi persetujuan. */
     public function isAtasan(): bool
     {
         return in_array($this->role, ['atasan_langsung', 'atasan'], true);
@@ -136,37 +117,21 @@ class User extends Authenticatable
         return $this->role === 'tata_usaha';
     }
 
-    /**
-     * Boleh mencatatkan acara kalender (mis. Dinas Luar) atas nama pegawai
-     * lain, dan mengakses halaman Riwayat Kegiatan.
-     */
     public function bisaCatatUntukOrangLain(): bool
     {
         return $this->isAdmin() || $this->isTataUsaha();
     }
 
-    /**
-     * Kepala Balai sendiri, ATAU Atasan Langsung yang sedang ditunjuk admin
-     * sebagai Plh (Pelaksana Harian) lewat kolom is_plh_kepala_balai.
-     * Dipakai untuk mengizinkan akses ke antrean Persetujuan Final dan
-     * mencatat siapa yang sedang berhak bertindak sebagai Kepala Balai.
-     */
     public function bisaBertindakSebagaiKepalaBalai(): bool
     {
         return $this->isKepalaBalai() || $this->is_plh_kepala_balai;
     }
 
-    /** Akun Kepala Balai yang sesungguhnya (peran 'atasan'). Hanya ada satu. */
     public static function kepalaBalai(): ?self
     {
         return static::where('role', 'atasan')->first();
     }
 
-    /**
-     * Kepala Balai berada di puncak rantai persetujuan, jadi ia boleh tidak
-     * punya atasan langsung — pengajuan cutinya disetujui sendiri. Peran lain
-     * wajib punya atasan agar cutinya ada tujuan persetujuan.
-     */
     public function perluAtasanLangsung(): bool
     {
         return ! $this->isKepalaBalai();
@@ -177,20 +142,12 @@ class User extends Authenticatable
         return self::ROLE_LABEL[$this->role] ?? ucfirst((string) $this->role);
     }
 
-    /** Pejabat sudah mengunggah gambar tanda tangan? */
     public function punyaTandaTangan(): bool
     {
         return $this->tanda_tangan
             && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->tanda_tangan);
     }
 
-    /**
-     * URL gambar tanda tangan untuk ditampilkan di halaman web.
-     * Memakai Storage::disk('public')->url() supaya otomatis mengikuti
-     * disk yang sedang aktif -- disk lokal (asset('storage/...')) di
-     * pengembangan, atau URL publik R2/S3 di production saat
-     * PUBLIC_DISK_DRIVER=s3 (lihat config/filesystems.php).
-     */
     public function getTandaTanganUrlAttribute(): ?string
     {
         return $this->punyaTandaTangan()
@@ -198,10 +155,6 @@ class User extends Authenticatable
             : null;
     }
 
-    /**
-     * Skala yang sudah dipastikan berada di rentang yang diizinkan.
-     * Data lama (sebelum kolom ini ada) atau nilai kosong dianggap bawaan.
-     */
     public function getTandaTanganSkalaAmanAttribute(): int
     {
         $skala = (int) ($this->tanda_tangan_skala ?: self::TTD_SKALA_DEFAULT);
@@ -209,23 +162,16 @@ class User extends Authenticatable
         return max(self::TTD_SKALA_MIN, min(self::TTD_SKALA_MAX, $skala));
     }
 
-    /** Tinggi cetak gambar tanda tangan dalam px (satuan yang dipakai DomPDF). */
     public function tandaTanganTinggiPx(): float
     {
         return round(self::TTD_TINGGI_DASAR * $this->tanda_tangan_skala_aman / 100, 1);
     }
 
-    /** Tinggi cetak dalam mm, untuk ditampilkan sebagai keterangan di form. */
     public function tandaTanganTinggiMm(): float
     {
         return round($this->tandaTanganTinggiPx() / 96 * 25.4, 1);
     }
 
-    /**
-     * Gambar tanda tangan dalam bentuk data URI.
-     * DomPDF tidak selalu bisa membaca berkas lewat URL, jadi untuk PDF
-     * gambarnya disisipkan langsung sebagai base64.
-     */
     public function tandaTanganDataUri(): ?string
     {
         if (! $this->punyaTandaTangan()) {
@@ -239,7 +185,6 @@ class User extends Authenticatable
         return 'data:' . $tipe . ';base64,' . base64_encode($isi);
     }
 
-    /** NIP diformat: 19900303 201001 2 003 */
     public function getNipFormattedAttribute(): string
     {
         $nip = (string) $this->nip;
@@ -252,7 +197,6 @@ class User extends Authenticatable
             . substr($nip, 14, 1) . ' ' . substr($nip, 15, 3);
     }
 
-    /** Masa kerja dihitung dari TMT PNS, contoh: "8 Tahun 3 Bulan". */
     public function getMasaKerjaAttribute(): string
     {
         if (! $this->tmt_pns) {
@@ -264,7 +208,6 @@ class User extends Authenticatable
         return $selisih->y . ' Tahun ' . $selisih->m . ' Bulan';
     }
 
-    /** Sudah bekerja minimal N tahun terus-menerus? (syarat cuti besar / CLTN) */
     public function masaKerjaMinimal(int $tahun): bool
     {
         return $this->tmt_pns !== null && $this->tmt_pns->diffInYears(now()) >= $tahun;

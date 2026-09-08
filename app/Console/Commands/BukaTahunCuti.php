@@ -7,15 +7,6 @@ use App\Models\User;
 use App\Services\LeaveService;
 use Illuminate\Console\Command;
 
-/**
- * Membuka hak cuti tahunan untuk seluruh pegawai pada tahun tertentu.
- *
- * Dijalankan sekali setiap awal tahun:
- *     php artisan cuti:buka-tahun
- *
- * Aman diulang — baris yang sudah ada tidak ditimpa, sehingga jumlah hari
- * yang terlanjur terpakai tidak akan hilang.
- */
 class BukaTahunCuti extends Command
 {
     protected $signature = 'cuti:buka-tahun

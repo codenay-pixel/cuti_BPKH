@@ -28,11 +28,6 @@ class LeaveApproval extends Model
         return $this->belongsTo(LeaveRequest::class);
     }
 
-    /**
-     * withTrashed() supaya jejak persetujuan lama (mis. di cetak formulir
-     * cuti) tetap tampilkan nama & tanda tangan penyetuju walau akunnya
-     * sudah dinonaktifkan (soft delete).
-     */
     public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id')->withTrashed();

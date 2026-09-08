@@ -18,11 +18,6 @@ class LoginRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Login memakai NIP (Nomor Induk Pegawai) + password.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -46,9 +41,6 @@ class LoginRequest extends FormRequest
         ];
     }
 
-    /**
-     * Normalisasi NIP: buang spasi, titik, dan strip sebelum dicocokkan.
-     */
     protected function prepareForValidation(): void
     {
         if ($this->has('nip')) {
@@ -58,9 +50,6 @@ class LoginRequest extends FormRequest
         }
     }
 
-    /**
-     * @throws ValidationException
-     */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
@@ -83,9 +72,6 @@ class LoginRequest extends FormRequest
         RateLimiter::clear($this->throttleKey());
     }
 
-    /**
-     * @throws ValidationException
-     */
     public function ensureIsNotRateLimited(): void
     {
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {

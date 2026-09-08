@@ -4,13 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Menambahkan dua kolom untuk fitur pencatatan Dinas Luar oleh Tata Usaha:
- * - nomor_spt: nomor Surat Perintah Tugas, diisi untuk kegiatan jenis dinas_luar.
- * - dicatat_oleh_id: siapa yang menginput acara ini (bisa beda dari user_id,
- *   yaitu pegawai yang bersangkutan, saat Tata Usaha/Admin mencatatkan
- *   acara atas nama pegawai lain).
- */
 return new class extends Migration
 {
     public function up(): void

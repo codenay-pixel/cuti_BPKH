@@ -8,10 +8,7 @@ use Illuminate\Http\Request;
 
 class DinasLuarReportController extends Controller
 {
-    /**
-     * Tahun-tahun yang punya data Dinas Luar, terbaru lebih dulu.
-     * Tahun berjalan selalu disertakan walau belum ada datanya.
-     */
+
     protected function tahunTersedia(): array
     {
         return OfficeEvent::dinasLuar()
@@ -45,8 +42,6 @@ class DinasLuarReportController extends Controller
             });
         }
 
-        // Rekap per pegawai dihitung dari seluruh data yang cocok filter
-        // (sebelum dipaginasi), supaya totalnya tidak terpotong halaman.
         $rekap = (clone $query)->get()
             ->groupBy('user_id')
             ->map(function ($rows) {

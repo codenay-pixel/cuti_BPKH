@@ -5,12 +5,6 @@ namespace Database\Seeders;
 use App\Models\LeaveType;
 use Illuminate\Database\Seeder;
 
-/**
- * 6 jenis cuti PNS sesuai PP 11/2017 tentang Manajemen PNS.
- * Seeder ini aman dijalankan berulang (idempotent): baris lama dicocokkan
- * lewat kode atau nama lamanya, sehingga leave_type_id yang sudah dipakai
- * pengajuan cuti tidak berubah.
- */
 class LeaveTypeSeeder extends Seeder
 {
     public function run(): void

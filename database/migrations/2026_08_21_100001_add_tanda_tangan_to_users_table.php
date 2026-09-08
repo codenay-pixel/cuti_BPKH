@@ -4,11 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Menyimpan berkas gambar tanda tangan pejabat (atasan langsung / kepala balai)
- * supaya bisa dicetak otomatis di Formulir Permintaan dan Pemberian Cuti.
- * Yang disimpan hanya path relatif di disk "public", bukan gambarnya.
- */
 return new class extends Migration
 {
     public function up(): void

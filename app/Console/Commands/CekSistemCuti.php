@@ -232,7 +232,6 @@ class CekSistemCuti extends Command
         $this->newLine();
     }
 
-    /** @param bool|null $ok true = lolos, false = masalah, null = peringatan */
     private function baris(?bool $ok, string $pesan): void
     {
         if ($ok === true) {

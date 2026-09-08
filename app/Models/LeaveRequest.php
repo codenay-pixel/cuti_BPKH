@@ -37,12 +37,6 @@ class LeaveRequest extends Model
         'ditolak'           => 'Ditolak',
     ];
 
-    /**
-     * URL lampiran cuti untuk ditampilkan/dibuka di halaman web.
-     * Memakai Storage::disk('public')->url() supaya otomatis mengikuti
-     * disk yang sedang aktif (lokal atau R2/S3 -- lihat PUBLIC_DISK_DRIVER
-     * di config/filesystems.php).
-     */
     public function getLampiranUrlAttribute(): ?string
     {
         return $this->lampiran
@@ -50,11 +44,6 @@ class LeaveRequest extends Model
             : null;
     }
 
-    /**
-     * withTrashed() supaya riwayat/rekap cuti lama (termasuk cetak formulir
-     * dan pencarian nama di laporan) tetap tampilkan nama pegawainya walau
-     * akunnya sudah dinonaktifkan (soft delete).
-     */
     public function user()
     {
         return $this->belongsTo(User::class)->withTrashed();
@@ -95,21 +84,11 @@ class LeaveRequest extends Model
         return in_array($this->status, ['disetujui', 'ditolak'], true);
     }
 
-    /**
-     * Pengajuan masih boleh diubah atau dibatalkan pemohonnya selama belum
-     * ada satu pun keputusan tercatat. Memakai jejak persetujuan, bukan status,
-     * agar pengajuan Kepala Balai yang menyetujui sendiri juga ikut tercakup.
-     */
     public function bolehDiubah(): bool
     {
         return ! $this->isFinal() && $this->approvals->isEmpty();
     }
 
-    /**
-     * Formulir hanya boleh dicetak setelah disetujui atasan langsung DAN
-     * pejabat pemberi cuti. Dipakai untuk menampilkan tombol di antarmuka;
-     * penguncian sebenarnya ada di LeaveRequestController::cetak().
-     */
     public function sudahDisetujuiPenuh(): bool
     {
         return $this->status === 'disetujui';

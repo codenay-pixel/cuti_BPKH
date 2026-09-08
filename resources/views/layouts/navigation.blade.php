@@ -47,18 +47,6 @@
                         @php
                             $diMenuKepegawaian = request()->routeIs('admin.users.*', 'admin.leave-balances.*', 'admin.reports.*', 'admin.dinas-luar.*');
                         @endphp
-                        {{--
-                            Sengaja tidak memakai <x-dropdown> di sini. Komponen itu
-                            membungkus trigger dalam <div> polos (bukan flex), jadi di
-                            dalam baris menu yang di-stretch (default align-items:
-                            stretch bawaan flexbox), tombolnya jadi menempel ke ATAS
-                            kotak yang di-stretch alih-alih ikut turun sejajar seperti
-                            <x-nav-link> lain -- itu sebab "Kepegawaian" terlihat naik
-                            sendiri. Di sini wrapper-nya dibuat inline-flex supaya
-                            tombolnya ikut di-stretch penuh, lalu items-center pada
-                            tombol sendiri yang menengahkan tulisannya -- pola yang
-                            sama persis dipakai <x-nav-link>.
-                        --}}
                         <div class="relative inline-flex" x-data="{ menuKepegawaian: false }"
                              @click.outside="menuKepegawaian = false" @keydown.escape.window="menuKepegawaian = false">
                             <button type="button" @click="menuKepegawaian = ! menuKepegawaian"

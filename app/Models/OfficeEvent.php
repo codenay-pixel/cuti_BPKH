@@ -36,12 +36,6 @@ class OfficeEvent extends Model
         'lainnya'    => 'Lainnya',
     ];
 
-    /**
-     * URL lampiran/surat dinas acara untuk ditampilkan/dibuka di halaman web.
-     * Memakai Storage::disk('public')->url() supaya otomatis mengikuti
-     * disk yang sedang aktif (lokal atau R2/S3 -- lihat PUBLIC_DISK_DRIVER
-     * di config/filesystems.php).
-     */
     public function getLampiranUrlAttribute(): ?string
     {
         return $this->lampiran
@@ -49,17 +43,11 @@ class OfficeEvent extends Model
             : null;
     }
 
-    /**
-     * withTrashed() supaya acara/riwayat kegiatan lama tetap tampilkan nama
-     * pegawainya walau akunnya sudah dinonaktifkan (soft delete) -- bukan
-     * lenyap dari rekap/laporan.
-     */
     public function user()
     {
         return $this->belongsTo(User::class)->withTrashed();
     }
 
-    /** Pegawai yang menginput acara ini (bisa berbeda dari user() bila dicatatkan oleh Tata Usaha/Admin). */
     public function dicatatOleh()
     {
         return $this->belongsTo(User::class, 'dicatat_oleh_id')->withTrashed();
@@ -74,7 +62,6 @@ class OfficeEvent extends Model
         return self::JENIS[$this->jenis] ?? ucfirst((string) $this->jenis);
     }
 
-    /** Lama kegiatan dalam hari, inklusif tanggal mulai dan selesai. */
     public function getLamaHariAttribute(): int
     {
         return $this->tanggal_mulai->diffInDays($this->tanggal_selesai) + 1;

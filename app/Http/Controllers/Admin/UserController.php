@@ -54,11 +54,6 @@ class UserController extends Controller
         return view('admin.users.create', compact('atasanList'));
     }
 
-    /**
-     * Kartu profil pegawai: data diri plus riwayat Dinas Luar-nya, supaya
-     * Tata Usaha/Admin bisa cek riwayat SPT seseorang tanpa harus menyaring
-     * dari daftar rekap.
-     */
     public function show(User $user)
     {
         $tahun = now()->year;
@@ -176,10 +171,6 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'Data pegawai berhasil diperbarui.');
     }
 
-    /**
-     * Simpan / ganti / hapus gambar tanda tangan pejabat.
-     * Berkas lama selalu dibuang supaya folder tidak menumpuk file yatim.
-     */
     protected function simpanTandaTangan(User $user, ?UploadedFile $berkas, bool $hapus): void
     {
         if (! $berkas && ! $hapus) {
@@ -197,12 +188,6 @@ class UserController extends Controller
         $user->forceFill(['tanda_tangan' => $path])->save();
     }
 
-    /**
-     * Menghapus pegawai sebenarnya menonaktifkan akunnya (soft delete) --
-     * berkas tanda tangan SENGAJA tidak ikut dibuang, karena masih dipakai
-     * kalau ada formulir cuti lama miliknya yang dicetak ulang. Riwayat cuti
-     * dan Dinas Luar/kegiatan atas namanya juga tetap tersimpan di laporan.
-     */
     public function destroy(User $user)
     {
         abort_if($user->id === auth()->id(), 403, 'Tidak bisa menghapus akun sendiri.');

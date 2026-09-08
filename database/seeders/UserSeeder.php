@@ -8,10 +8,6 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-/**
- * Akun contoh. Login memakai NIP + password (default: password123).
- * Seeder ini idempotent, aman dijalankan ulang.
- */
 class UserSeeder extends Seeder
 {
     public function run(): void
@@ -74,7 +70,6 @@ class UserSeeder extends Seeder
         return User::updateOrCreate(['nip' => $nip], $data);
     }
 
-    /** Buat saldo cuti tahunan untuk 3 tahun terakhir (N-2, N-1, N). */
     private function saldoTahunan(User $user): void
     {
         $jenis = LeaveType::where('kode', LeaveType::TAHUNAN)->first();

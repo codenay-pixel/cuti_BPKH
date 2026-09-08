@@ -49,7 +49,6 @@ class StoreLeaveRequest extends FormRequest
         });
     }
 
-    /** Jenis cuti tertentu wajib menyertakan dokumen pendukung. */
     private function cekLampiranWajib(Validator $validator): void
     {
         $jenis = LeaveType::find($this->input('leave_type_id'));
@@ -66,10 +65,6 @@ class StoreLeaveRequest extends FormRequest
         }
     }
 
-    /**
-     * Cuti sakit dan cuti karena alasan penting boleh diajukan mundur
-     * (kejadiannya sudah lewat). Jenis lain harus untuk tanggal ke depan.
-     */
     private function cekTanggalMundur(Validator $validator): void
     {
         $jenis = LeaveType::find($this->input('leave_type_id'));

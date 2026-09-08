@@ -16,12 +16,6 @@ class ApprovalController extends Controller
     {
     }
 
-    /**
-     * Antrean & riwayat ini SELALU milik akun Kepala Balai yang sesungguhnya
-     * (current_approver_id mengarah ke situ, bukan ke Plh) -- supaya Kepala
-     * Balai dan Plh-nya melihat antrean yang sama persis, siapa pun yang
-     * sedang login. Lihat User::bisaBertindakSebagaiKepalaBalai().
-     */
     public function index(Request $request)
     {
         $kepalaBalai = User::kepalaBalai();

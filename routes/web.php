@@ -15,13 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect()->route('login'));
 
-/*
- * Batas request (throttle) ditambahkan di semua grup rute di bawah ini --
- * sebelumnya cuma halaman login yang dilindungi (lewat LoginRequest).
- * Angkanya sengaja longgar (jauh di atas pemakaian wajar sehari-hari) supaya
- * tidak mengganggu pengguna biasa, tujuannya cuma menahan permintaan
- * bertubi-tubi yang gak wajar (mis. dibanjiri lewat script).
- */
 Route::middleware(['auth', 'throttle:120,1'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
@@ -68,13 +61,6 @@ Route::middleware(['auth', 'role:admin', 'throttle:100,1'])->prefix('admin')->na
     Route::get('reports/export-pdf', [LeaveReportController::class, 'exportPdf'])->name('reports.export-pdf');
 });
 
-/**
- * Rute yang bisa diakses Admin Kepegawaian MAUPUN Tata Usaha: kartu profil
- * pegawai (dengan riwayat kegiatannya) dan halaman Riwayat Kegiatan.
- * Sengaja dipisah dari grup 'role:admin' di atas -- Tata Usaha tidak boleh
- * mengelola akun pegawai (tambah/ubah/hapus), hanya melihat profil dan
- * mencatat/merekap Dinas Luar.
- */
 Route::middleware(['auth', 'role:admin,tata_usaha', 'throttle:100,1'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('pegawai/{user}', [UserController::class, 'show'])->name('users.show');
     Route::get('dinas-luar', [DinasLuarReportController::class, 'index'])->name('dinas-luar.index');
@@ -82,9 +68,6 @@ Route::middleware(['auth', 'role:admin,tata_usaha', 'throttle:100,1'])->prefix('
 
 require __DIR__ . '/auth.php';
 
-// Rute publik (tanpa login) yang dilindungi token rahasia, bukan sesi --
-// tetap diberi throttle sebagai lapisan tambahan supaya token-nya tidak
-// gampang ditebak lewat percobaan bertubi-tubi.
 Route::middleware('throttle:20,1')->get('/system/backup/{token}', function (string $token) {
     $expected = (string) config('app.backup_token');
 

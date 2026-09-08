@@ -137,7 +137,6 @@ class LeaveRequestController extends Controller
         return view('pegawai.leave.show', compact('leaveRequest'));
     }
 
-    /** Cetak Formulir Permintaan dan Pemberian Cuti sebagai PDF. */
     public function cetak(Request $request, LeaveRequest $leaveRequest)
     {
 
@@ -182,7 +181,6 @@ class LeaveRequestController extends Controller
             : $pdf->stream($namaFile);
     }
 
-    /** Batalkan pengajuan yang masih menunggu persetujuan atasan langsung. */
     public function destroy(LeaveRequest $leaveRequest)
     {
         $this->pastikanMilikSendiri($leaveRequest);

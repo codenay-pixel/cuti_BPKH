@@ -17,9 +17,6 @@ class OfficeEventController extends Controller
             $data['lampiran'] = $request->file('lampiran')->store('surat-dinas', 'public');
         }
 
-        // Tata Usaha/Admin boleh mencatatkan acara atas nama pegawai lain
-        // lewat field pegawai_id. Pegawai biasa (dan siapa pun tanpa
-        // pegawai_id terisi) selalu mencatat untuk dirinya sendiri.
         $pegawaiId = $data['pegawai_id'] ?? null;
 
         $data['user_id'] = ($pegawaiId && $request->user()->bisaCatatUntukOrangLain())

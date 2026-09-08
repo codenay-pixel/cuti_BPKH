@@ -13,18 +13,11 @@ use Illuminate\Support\Facades\Storage;
 
 class LeaveService
 {
-    /** Hak cuti tahunan setiap tahun (PP 11/2017 Pasal 310). */
+
     public const HAK_TAHUNAN = 12;
 
-    /**
-     * Sisa cuti tahunan tahun sebelumnya (N-1) dan dua tahun sebelumnya (N-2)
-     * masing-masing hanya boleh dipakai paling banyak 6 hari kerja di tahun
-     * berjalan (PP 11/2017 Pasal 313). Jadi maksimum yang bisa diambil dalam
-     * satu tahun = 12 + 6 + 6 = 24 hari kerja.
-     */
     public const MAKS_AKUMULASI = 6;
 
-    /** Berapa tahun ke belakang yang masih bisa diakumulasikan. */
     public const TAHUN_AKUMULASI = 2;
 
     public function hitungHariKerja(string $mulai, string $selesai): int
@@ -41,10 +34,6 @@ class LeaveService
         return $hariKerja;
     }
 
-    /**
-     * Jenis "Cuti Tahunan". Mengembalikan null bila LeaveTypeSeeder belum
-     * dijalankan, supaya halaman tidak error total.
-     */
     public function jenisTahunan(): ?LeaveType
     {
         static $cache = false;
@@ -56,18 +45,6 @@ class LeaveService
         return $cache;
     }
 
-    /**
-     * Pastikan baris saldo cuti tahunan untuk TAHUN BERJALAN ada.
-     *
-     * Saldo tahun lampau (N-1 dan N-2) sengaja TIDAK dibuat otomatis. Sisa cuti
-     * tahun-tahun sebelumnya adalah data historis yang hanya diketahui bagian
-     * kepegawaian — sesuai catatan pada formulir resmi: "diisi oleh pejabat yang
-     * menangani bidang kepegawaian sebelum PNS mengajukan cuti". Membuatnya
-     * otomatis dengan asumsi terpakai = 0 akan memberi pegawai 12 hari akumulasi
-     * yang belum tentu benar-benar dia miliki.
-     *
-     * Admin mengisinya lewat menu Saldo Cuti.
-     */
     public function pastikanSaldoTahunan(User $user, ?int $tahun = null): void
     {
         $tahun ??= now()->year;
@@ -87,11 +64,6 @@ class LeaveService
         );
     }
 
-    /**
-     * Rincian saldo cuti tahunan yang bisa dipakai pada tahun berjalan.
-     *
-     * @return array{tahun:int, rincian:array<int,array<string,mixed>>, total_tersedia:int, total_sisa:int, terpakai_tahun_ini:int}
-     */
     public function rincianSaldoTahunan(User $user, ?int $tahun = null): array
     {
         $tahun ??= now()->year;
@@ -148,10 +120,6 @@ class LeaveService
         return $this->rincianSaldoTahunan($user, $tahun)['total_tersedia'];
     }
 
-    /**
-     * Hari cuti tahunan yang masih "dipesan" oleh pengajuan yang belum final,
-     * supaya pegawai tidak bisa mengajukan melebihi saldo dengan cara antre.
-     */
     public function hariTertahan(User $user, ?int $tahun = null, ?int $kecualikanId = null): int
     {
         $tahun ??= now()->year;
@@ -232,10 +200,6 @@ class LeaveService
         });
     }
 
-    /**
-     * Ubah pengajuan yang belum diputuskan siapa pun.
-     * Status dan tujuan persetujuan tidak diubah — hanya isinya.
-     */
     public function perbaruiCuti(LeaveRequest $leaveRequest, array $data, ?UploadedFile $lampiran = null): LeaveRequest
     {
         $user = $leaveRequest->user;
@@ -294,11 +258,6 @@ class LeaveService
         });
     }
 
-    /**
-     * Persetujuan final: potong saldo mulai dari tahun paling lama
-     * (yang paling cepat hangus), dengan tetap menghormati batas 6 hari
-     * untuk saldo tahun-tahun sebelumnya.
-     */
     public function setujuiCutiFinal(LeaveRequest $leaveRequest): void
     {
         DB::transaction(function () use ($leaveRequest) {
@@ -360,13 +319,6 @@ class LeaveService
         });
     }
 
-    /**
-     * Kembalikan saldo cuti tahunan yang sudah terpotong.
-     *
-     * Dipakai saat pengajuan yang sudah disetujui dibatalkan atau dihapus.
-     * Pengembalian dilakukan dari tahun terlama, mengikuti urutan pemotongan
-     * di setujuiCutiFinal(), dan tidak akan membuat "terpakai" jadi negatif.
-     */
     public function kembalikanSaldo(LeaveRequest $leaveRequest): int
     {
         $leaveRequest->loadMissing('leaveType');
@@ -410,7 +362,6 @@ class LeaveService
         });
     }
 
-    /** Nomor surat sederhana: 001/CUTI/BPKH/VIII/2026 */
     public function buatNomorSurat(LeaveRequest $leaveRequest): string
     {
         $urut = LeaveRequest::whereYear('created_at', $leaveRequest->created_at?->year ?? now()->year)

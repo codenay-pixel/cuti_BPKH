@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LeaveType extends Model
 {
-    /** Kode tetap 6 jenis cuti PNS (PP 11/2017). */
+
     public const TAHUNAN            = 'tahunan';
     public const SAKIT              = 'sakit';
     public const MELAHIRKAN         = 'melahirkan';
@@ -44,7 +44,6 @@ class LeaveType extends Model
         return $this->hasMany(LeaveBalance::class);
     }
 
-    /** Daftar 6 jenis cuti, selalu urut sesuai formulir resmi. */
     public function scopeUrut($query)
     {
         return $query->orderBy('urutan')->orderBy('id');
@@ -55,7 +54,6 @@ class LeaveType extends Model
         return $this->kode === self::TAHUNAN;
     }
 
-    /** Syarat dokumen dipecah jadi array baris untuk ditampilkan sebagai daftar. */
     public function syaratList(): array
     {
         if (blank($this->syarat_dokumen)) {
