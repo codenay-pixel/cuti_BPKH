@@ -261,25 +261,35 @@
                         <div class="px-5 sm:px-6 py-5 space-y-4"
                              x-data="{
                                 jenisPilihan: '{{ old('jenis', 'dinas_luar') }}',
-                                daftarPegawai: {{ Illuminate\Support\Js::from($pegawaiList->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'unit_kerja' => $p->unit_kerja ?: ''])) }},
+                                daftarPegawai: {{ Illuminate\Support\Js::from($pegawaiList->map(fn ($p) => [
+                                    'id' => $p->id,
+                                    'name' => $p->name,
+                                    'atasan_id' => $p->atasan_id ?: '__tanpa_atasan',
+                                    'atasan_nama' => $p->atasan?->name ?: 'Tanpa Atasan Langsung',
+                                ])) }},
                                 pegawaiId: '{{ old('pegawai_id', '') }}',
-                                unitTerpilih: '',
+                                atasanTerpilih: '',
                                 init() {
                                     if (this.pegawaiId) {
                                         const p = this.daftarPegawai.find(x => String(x.id) === String(this.pegawaiId));
-                                        if (p) this.unitTerpilih = p.unit_kerja || '__tanpa_unit';
+                                        if (p) this.atasanTerpilih = p.atasan_id;
                                     }
                                 },
-                                get daftarUnitKerja() {
-                                    const set = new Set(this.daftarPegawai.map(p => p.unit_kerja || '__tanpa_unit'));
-                                    return Array.from(set).sort((a, b) => {
-                                        if (a === '__tanpa_unit') return 1;
-                                        if (b === '__tanpa_unit') return -1;
-                                        return a.localeCompare(b);
+                                get daftarAtasan() {
+                                    const map = new Map();
+                                    this.daftarPegawai.forEach(p => {
+                                        if (! map.has(p.atasan_id)) {
+                                            map.set(p.atasan_id, { id: p.atasan_id, nama: p.atasan_nama });
+                                        }
+                                    });
+                                    return Array.from(map.values()).sort((a, b) => {
+                                        if (a.id === '__tanpa_atasan') return 1;
+                                        if (b.id === '__tanpa_atasan') return -1;
+                                        return a.nama.localeCompare(b.nama);
                                     });
                                 },
                                 get pegawaiTersaring() {
-                                    return this.daftarPegawai.filter(p => (p.unit_kerja || '__tanpa_unit') === this.unitTerpilih);
+                                    return this.daftarPegawai.filter(p => p.atasan_id === this.atasanTerpilih);
                                 },
                              }">
                             <div>
@@ -297,17 +307,17 @@
                                     <p class="block text-sm font-medium text-gray-700">Dicatatkan Untuk</p>
 
                                     <div>
-                                        <label for="unit_kerja_pilih" class="block text-xs text-gray-500 mb-1">Unit Kerja</label>
-                                        <select id="unit_kerja_pilih" x-model="unitTerpilih" @change="pegawaiId = ''"
+                                        <label for="atasan_pilih" class="block text-xs text-gray-500 mb-1">Atasan Langsung</label>
+                                        <select id="atasan_pilih" x-model="atasanTerpilih" @change="pegawaiId = ''"
                                                 class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
                                             <option value="">— Diri saya sendiri ({{ auth()->user()->name }}) —</option>
-                                            <template x-for="unit in daftarUnitKerja" :key="unit">
-                                                <option :value="unit" x-text="unit === '__tanpa_unit' ? 'Tanpa Unit Kerja' : unit"></option>
+                                            <template x-for="atasan in daftarAtasan" :key="atasan.id">
+                                                <option :value="atasan.id" x-text="atasan.nama"></option>
                                             </template>
                                         </select>
                                     </div>
 
-                                    <div x-show="unitTerpilih !== ''" x-cloak>
+                                    <div x-show="atasanTerpilih !== ''" x-cloak>
                                         <label for="pegawai_id" class="block text-xs text-gray-500 mb-1">Pegawai</label>
                                         <select id="pegawai_id" name="pegawai_id" x-model="pegawaiId"
                                                 class="w-full rounded-lg border-gray-300 text-sm focus:border-accent-500 focus:ring-accent-500">
@@ -320,7 +330,7 @@
                                     </div>
 
                                     <p class="text-xs text-gray-500">
-                                        Pilih unit kerja pegawai yang bersangkutan dulu, lalu pilih namanya -- berguna kalau Anda mencatatkan kegiatan atas nama pegawai lain, misalnya dinas luar berdasarkan Surat Perintah Tugas.
+                                        Pilih atasan langsung pegawai yang bersangkutan dulu, lalu pilih namanya -- berguna kalau Anda mencatatkan kegiatan atas nama pegawai lain, misalnya dinas luar berdasarkan Surat Perintah Tugas.
                                     </p>
                                 </div>
                             @endif
