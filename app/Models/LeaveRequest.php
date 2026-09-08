@@ -50,9 +50,14 @@ class LeaveRequest extends Model
             : null;
     }
 
+    /**
+     * withTrashed() supaya riwayat/rekap cuti lama (termasuk cetak formulir
+     * dan pencarian nama di laporan) tetap tampilkan nama pegawainya walau
+     * akunnya sudah dinonaktifkan (soft delete).
+     */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function leaveType()
@@ -62,7 +67,7 @@ class LeaveRequest extends Model
 
     public function currentApprover()
     {
-        return $this->belongsTo(User::class, 'current_approver_id');
+        return $this->belongsTo(User::class, 'current_approver_id')->withTrashed();
     }
 
     public function approvals()

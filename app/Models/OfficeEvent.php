@@ -49,15 +49,20 @@ class OfficeEvent extends Model
             : null;
     }
 
+    /**
+     * withTrashed() supaya acara/riwayat kegiatan lama tetap tampilkan nama
+     * pegawainya walau akunnya sudah dinonaktifkan (soft delete) -- bukan
+     * lenyap dari rekap/laporan.
+     */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     /** Pegawai yang menginput acara ini (bisa berbeda dari user() bila dicatatkan oleh Tata Usaha/Admin). */
     public function dicatatOleh()
     {
-        return $this->belongsTo(User::class, 'dicatat_oleh_id');
+        return $this->belongsTo(User::class, 'dicatat_oleh_id')->withTrashed();
     }
 
     public function getJenisLabelAttribute(): string

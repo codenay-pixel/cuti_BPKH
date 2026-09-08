@@ -3,13 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
+
+    /**
+     * Pegawai yang "dihapus" sebenarnya dinonaktifkan (soft delete), bukan
+     * dibuang permanen -- supaya riwayat cuti dan Dinas Luar yang sudah
+     * tercatat atas namanya tetap bisa dilihat di laporan/rekap. Akun yang
+     * dinonaktifkan otomatis tidak bisa dipakai login lagi (dikeluarkan dari
+     * pencarian User bawaan Eloquent), tapi datanya tidak hilang.
+     */
 
     protected $fillable = [
         'name',
@@ -61,9 +70,13 @@ class User extends Authenticatable
         'tata_usaha'      => 'Tata Usaha',
     ];
 
+    /**
+     * withTrashed() supaya nama atasan tetap muncul di data lama (mis. cetak
+     * formulir cuti, riwayat kegiatan) walau akun atasannya sudah dinonaktifkan.
+     */
     public function atasan()
     {
-        return $this->belongsTo(User::class, 'atasan_id');
+        return $this->belongsTo(User::class, 'atasan_id')->withTrashed();
     }
 
     public function bawahan()

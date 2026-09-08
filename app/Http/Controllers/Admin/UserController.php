@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Support\Audit;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -109,6 +110,12 @@ class UserController extends Controller
 
         $this->simpanTandaTangan($user, $request->file('tanda_tangan'), false);
 
+        Audit::catat('pegawai.ditambahkan', [
+            'pegawai_id' => $user->id,
+            'nama'       => $user->name,
+            'role'       => $user->role,
+        ]);
+
         return redirect()->route('admin.users.index')->with('success', 'Pegawai berhasil ditambahkan.');
     }
 
@@ -122,6 +129,8 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        $roleSebelumnya = $user->role;
+
         $data = $request->validated();
 
         if (!empty($data['password'])) {
@@ -157,6 +166,13 @@ class UserController extends Controller
             $request->boolean('hapus_tanda_tangan')
         );
 
+        Audit::catat('pegawai.diubah', array_filter([
+            'pegawai_id'      => $user->id,
+            'nama'            => $user->name,
+            'role_sebelumnya' => $roleSebelumnya !== $user->role ? $roleSebelumnya : null,
+            'role_baru'       => $roleSebelumnya !== $user->role ? $user->role : null,
+        ], fn ($v) => $v !== null));
+
         return redirect()->route('admin.users.index')->with('success', 'Data pegawai berhasil diperbarui.');
     }
 
@@ -181,16 +197,25 @@ class UserController extends Controller
         $user->forceFill(['tanda_tangan' => $path])->save();
     }
 
+    /**
+     * Menghapus pegawai sebenarnya menonaktifkan akunnya (soft delete) --
+     * berkas tanda tangan SENGAJA tidak ikut dibuang, karena masih dipakai
+     * kalau ada formulir cuti lama miliknya yang dicetak ulang. Riwayat cuti
+     * dan Dinas Luar/kegiatan atas namanya juga tetap tersimpan di laporan.
+     */
     public function destroy(User $user)
     {
         abort_if($user->id === auth()->id(), 403, 'Tidak bisa menghapus akun sendiri.');
 
-        if ($user->tanda_tangan) {
-            Storage::disk('public')->delete($user->tanda_tangan);
-        }
+        Audit::catat('pegawai.dihapus', [
+            'pegawai_id' => $user->id,
+            'nama'       => $user->name,
+            'role'       => $user->role,
+        ]);
 
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'Pegawai berhasil dihapus.');
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Pegawai berhasil dihapus. Akunnya dinonaktifkan -- riwayat cuti dan kegiatannya tetap tersimpan di laporan.');
     }
 }
