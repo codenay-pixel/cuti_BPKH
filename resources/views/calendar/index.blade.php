@@ -264,7 +264,7 @@
                                 daftarPegawai: {{ Illuminate\Support\Js::from($pegawaiList->map(fn ($p) => [
                                     'id' => $p->id,
                                     'name' => $p->name,
-                                    'atasan_id' => $p->atasan_id ?: '__tanpa_atasan',
+                                    'atasan_id' => $p->atasan_id ? (string) $p->atasan_id : '__tanpa_atasan',
                                     'atasan_nama' => $p->atasan?->name ?: 'Tanpa Atasan Langsung',
                                 ])) }},
                                 pegawaiId: '{{ old('pegawai_id', '') }}',
