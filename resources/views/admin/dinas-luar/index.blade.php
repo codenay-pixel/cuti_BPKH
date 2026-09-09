@@ -150,9 +150,13 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 text-gray-500" colspan="6">
-                                        {{ $grup['jumlah_kegiatan'] }} kegiatan &middot; {{ $grup['total_hari'] }} hari
+                                    <td class="px-4 py-3 text-gray-500" colspan="4">
+                                        {{ $grup['jumlah_kegiatan'] }} kegiatan
                                     </td>
+                                    <td class="px-4 py-3 text-center font-medium text-gray-700 whitespace-nowrap">
+                                        {{ $grup['total_hari'] }} hari
+                                    </td>
+                                    <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3"></td>
                                 </tr>
                                 @foreach ($grup['kegiatan'] as $item)
