@@ -45,25 +45,10 @@ class DinasLuarReportController extends Controller
             });
         }
 
-        // Rekap per pegawai dihitung dari seluruh data yang cocok filter
-        // (sebelum dipaginasi), supaya totalnya tidak terpotong halaman.
-        $rekap = (clone $query)->get()
-            ->groupBy('user_id')
-            ->map(function ($rows) {
-                return [
-                    'user'            => $rows->first()->user,
-                    'jumlah_kegiatan' => $rows->count(),
-                    'total_hari'      => $rows->sum->lama_hari,
-                ];
-            })
-            ->sortByDesc('total_hari')
-            ->values();
-
         $riwayat = $query->orderByDesc('tanggal_mulai')->paginate(15)->withQueryString();
 
         return view('admin.dinas-luar.index', [
             'riwayat'          => $riwayat,
-            'rekap'            => $rekap,
             'tahun'            => $tahun,
             'bulan'            => $bulan,
             'jenis'            => $jenis,

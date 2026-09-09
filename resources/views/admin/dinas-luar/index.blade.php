@@ -57,36 +57,6 @@
                     @endif
                     <div class="col-span-2 sm:ms-auto text-xs text-gray-500 sm:self-center">Total {{ $riwayat->total() }} kegiatan</div>
                 </form>
-
-                <div class="px-4 sm:px-5 py-4">
-                    <h3 class="text-sm font-semibold text-gray-800 mb-3">
-                        Rekap per Pegawai
-                        @if ($bulan)
-                            &mdash; {{ \Carbon\Carbon::create($tahun, $bulan, 1)->translatedFormat('F Y') }}
-                        @else
-                            &mdash; Tahun {{ $tahun }}
-                        @endif
-                    </h3>
-
-                    @if ($rekap->isEmpty())
-                        <p class="text-sm text-gray-500 py-4 text-center">Belum ada data kegiatan pada periode ini.</p>
-                    @else
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                            @foreach ($rekap as $r)
-                                <div class="rounded-xl border border-gray-300 bg-gray-50 px-4 py-3">
-                                    <p class="font-medium text-gray-800 text-sm truncate">{{ $r['user']->name ?? 'Pegawai tidak diketahui' }}</p>
-                                    <p class="text-[11px] text-gray-500 mb-2">{{ $r['user']->jabatan ?? '—' }}</p>
-                                    <div class="flex items-center gap-3">
-                                        <span class="px-2 py-1 rounded-md bg-accent-500/15 text-accent-700 text-xs font-semibold">
-                                            {{ $r['total_hari'] }} hari
-                                        </span>
-                                        <span class="text-xs text-gray-500">{{ $r['jumlah_kegiatan'] }} kegiatan</span>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
             </div>
 
             <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
@@ -102,9 +72,18 @@
                                     <p class="font-semibold text-gray-800">{{ $item->user->name }}</p>
                                     <p class="text-[11px] text-gray-400 font-mono">{{ $item->user->nip_formatted }}</p>
                                 </div>
-                                <span class="shrink-0 px-2 py-1 rounded-md text-[11px] bg-accent-500/15 text-accent-700 font-medium">
-                                    {{ $item->lama_hari }} hari
-                                </span>
+                                <div class="shrink-0 flex items-center gap-2">
+                                    <span class="px-2 py-1 rounded-md text-[11px] bg-accent-500/15 text-accent-700 font-medium">
+                                        {{ $item->lama_hari }} hari
+                                    </span>
+                                    <form method="POST" action="{{ route('events.destroy', $item) }}"
+                                          onsubmit="return confirm('Hapus kegiatan ini?')">
+                                        @csrf @method('DELETE')
+                                        <button class="p-1 text-gray-300 hover:text-rose-500" title="Hapus kegiatan">
+                                            <x-ikon nama="silang" kelas="w-4 h-4" />
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                             <p class="text-xs text-gray-500">{{ $item->jenis_label }}</p>
                             <p class="text-sm text-gray-700">
@@ -135,6 +114,7 @@
                                 <th class="px-4 py-3 text-left font-semibold">Tanggal Selesai</th>
                                 <th class="px-4 py-3 text-center font-semibold">Lama</th>
                                 <th class="px-4 py-3 text-left font-semibold">Dicatat Oleh</th>
+                                <th class="px-4 py-3 text-center font-semibold">Hapus</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-300">
@@ -150,9 +130,18 @@
                                     <td class="px-4 py-3 whitespace-nowrap text-gray-700">{{ $item->tanggal_selesai->translatedFormat('d M Y') }}</td>
                                     <td class="px-4 py-3 text-center whitespace-nowrap">{{ $item->lama_hari }} hari</td>
                                     <td class="px-4 py-3 text-gray-700">{{ $item->dicatatOleh?->name ?? '—' }}</td>
+                                    <td class="px-4 py-3 text-center">
+                                        <form method="POST" action="{{ route('events.destroy', $item) }}"
+                                              onsubmit="return confirm('Hapus kegiatan ini?')">
+                                            @csrf @method('DELETE')
+                                            <button class="p-1 text-gray-300 hover:text-rose-500" title="Hapus kegiatan">
+                                                <x-ikon nama="silang" kelas="w-4 h-4" />
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="7" class="px-4 py-10 text-center text-sm text-gray-500">Tidak ada data{{ $tahunIniBerjalan ? '' : ' di arsip ' . $tahun }}.</td></tr>
+                                <tr><td colspan="8" class="px-4 py-10 text-center text-sm text-gray-500">Tidak ada data{{ $tahunIniBerjalan ? '' : ' di arsip ' . $tahun }}.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

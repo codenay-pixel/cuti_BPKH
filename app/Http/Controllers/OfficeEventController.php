@@ -50,7 +50,7 @@ class OfficeEventController extends Controller
         abort_unless(
             $officeEvent->user_id === auth()->id()
                 || $officeEvent->dicatat_oleh_id === auth()->id()
-                || auth()->user()->isAdmin(),
+                || auth()->user()->bisaCatatUntukOrangLain(),
             403,
             'Anda hanya dapat menghapus acara yang Anda buat sendiri.'
         );
