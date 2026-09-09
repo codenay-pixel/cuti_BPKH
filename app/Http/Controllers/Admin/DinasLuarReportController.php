@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\OfficeEvent;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class DinasLuarReportController extends Controller
 {
@@ -45,10 +46,36 @@ class DinasLuarReportController extends Controller
             });
         }
 
-        $riwayat = $query->orderByDesc('tanggal_mulai')->paginate(15)->withQueryString();
+        $perGrup = 15;
+        $halaman = (int) $request->get('page', 1);
+
+        // Dikelompokkan per pegawai, bukan per baris kegiatan -- satu pegawai
+        // cuma muncul sekali di tabel, dan semua kegiatannya disatukan di
+        // dalam grup itu supaya bisa dibuka/tutup dari nama pegawainya.
+        $semuaGrup = $query->orderByDesc('tanggal_mulai')->get()
+            ->groupBy('user_id')
+            ->map(function ($rows) {
+                return [
+                    'user'            => $rows->first()->user,
+                    'kegiatan'        => $rows,
+                    'jumlah_kegiatan' => $rows->count(),
+                    'total_hari'      => $rows->sum->lama_hari,
+                ];
+            })
+            ->sortBy(fn ($grup) => $grup['user']->name ?? '')
+            ->values();
+
+        $riwayat = new LengthAwarePaginator(
+            $semuaGrup->forPage($halaman, $perGrup)->values(),
+            $semuaGrup->count(),
+            $perGrup,
+            $halaman,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return view('admin.dinas-luar.index', [
             'riwayat'          => $riwayat,
+            'totalKegiatan'    => $semuaGrup->sum('jumlah_kegiatan'),
             'tahun'            => $tahun,
             'bulan'            => $bulan,
             'jenis'            => $jenis,

@@ -55,48 +55,68 @@
                     @if (request()->hasAny(['bulan', 'jenis', 'nama']) || ! $tahunIniBerjalan)
                         <a href="{{ route('admin.dinas-luar.index') }}" class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-800 text-center">Reset</a>
                     @endif
-                    <div class="col-span-2 sm:ms-auto text-xs text-gray-500 sm:self-center">Total {{ $riwayat->total() }} kegiatan</div>
+                    <div class="col-span-2 sm:ms-auto text-xs text-gray-500 sm:self-center">
+                        Total {{ $riwayat->total() }} pegawai &middot; {{ $totalKegiatan }} kegiatan
+                    </div>
                 </form>
             </div>
 
             <div class="bg-white border border-gray-300 rounded-xl overflow-hidden">
                 <div class="px-4 sm:px-5 py-3 border-b border-gray-300 bg-gray-50">
                     <h3 class="text-sm font-semibold text-gray-800">Detail Kegiatan</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Diringkas per pegawai -- klik nama untuk buka semua kegiatannya</p>
                 </div>
 
                 <div class="lg:hidden divide-y divide-gray-300">
-                    @forelse ($riwayat as $item)
-                        <div class="p-4 space-y-2">
-                            <div class="flex items-start justify-between gap-3">
+                    @forelse ($riwayat as $grup)
+                        <div x-data="{ open: false }">
+                            <button type="button" @click="open = ! open"
+                                    class="w-full p-4 flex items-center justify-between gap-3 text-left">
                                 <div class="min-w-0">
-                                    <p class="font-semibold text-gray-800">{{ $item->user->name }}</p>
-                                    <p class="text-[11px] text-gray-400 font-mono">{{ $item->user->nip_formatted }}</p>
+                                    <p class="font-semibold text-gray-800">{{ $grup['user']->name ?? 'Pegawai tidak diketahui' }}</p>
+                                    <p class="text-[11px] text-gray-400 font-mono">{{ $grup['user']->nip_formatted ?? '—' }}</p>
                                 </div>
                                 <div class="shrink-0 flex items-center gap-2">
                                     <span class="px-2 py-1 rounded-md text-[11px] bg-accent-500/15 text-accent-700 font-medium">
-                                        {{ $item->lama_hari }} hari
+                                        {{ $grup['jumlah_kegiatan'] }} kegiatan
                                     </span>
-                                    <form method="POST" action="{{ route('events.destroy', $item) }}"
-                                          onsubmit="return confirm('Hapus kegiatan ini?')">
-                                        @csrf @method('DELETE')
-                                        <button class="p-1 text-gray-300 hover:text-rose-500" title="Hapus kegiatan">
-                                            <x-ikon nama="silang" kelas="w-4 h-4" />
-                                        </button>
-                                    </form>
+                                    <x-ikon nama="panah-bawah" kelas="w-4 h-4 text-gray-400 transition-transform duration-150 shrink-0"
+                                            x-bind:class="{ 'rotate-180': open }" />
                                 </div>
+                            </button>
+
+                            <div x-show="open" x-cloak class="divide-y divide-gray-200 bg-gray-50">
+                                @foreach ($grup['kegiatan'] as $item)
+                                    <div class="p-4 pl-6 space-y-2">
+                                        <div class="flex items-start justify-between gap-3">
+                                            <p class="text-sm font-medium text-gray-700">{{ $item->jenis_label }}</p>
+                                            <div class="shrink-0 flex items-center gap-2">
+                                                <span class="px-2 py-1 rounded-md text-[11px] bg-accent-500/15 text-accent-700 font-medium">
+                                                    {{ $item->lama_hari }} hari
+                                                </span>
+                                                <form method="POST" action="{{ route('events.destroy', $item) }}"
+                                                      onsubmit="return confirm('Hapus kegiatan ini?')">
+                                                    @csrf @method('DELETE')
+                                                    <button class="p-1 text-gray-300 hover:text-rose-500" title="Hapus kegiatan">
+                                                        <x-ikon nama="silang" kelas="w-4 h-4" />
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-gray-700">
+                                            {{ $item->tanggal_mulai->translatedFormat('d M Y') }}
+                                            <span class="text-gray-300">&rarr;</span>
+                                            {{ $item->tanggal_selesai->translatedFormat('d M Y') }}
+                                        </p>
+                                        @if ($item->nomor_spt)
+                                            <p class="text-xs text-gray-500">No. Surat {{ $item->nomor_spt }}</p>
+                                        @endif
+                                        @if ($item->dicatat_oleh_id && $item->dicatat_oleh_id !== $item->user_id)
+                                            <p class="text-[11px] text-gray-400">Dicatat oleh {{ $item->dicatatOleh?->name }}</p>
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
-                            <p class="text-xs text-gray-500">{{ $item->jenis_label }}</p>
-                            <p class="text-sm text-gray-700">
-                                {{ $item->tanggal_mulai->translatedFormat('d M Y') }}
-                                <span class="text-gray-300">&rarr;</span>
-                                {{ $item->tanggal_selesai->translatedFormat('d M Y') }}
-                            </p>
-                            @if ($item->nomor_spt)
-                                <p class="text-xs text-gray-500">No. Surat {{ $item->nomor_spt }}</p>
-                            @endif
-                            @if ($item->dicatat_oleh_id && $item->dicatat_oleh_id !== $item->user_id)
-                                <p class="text-[11px] text-gray-400">Dicatat oleh {{ $item->dicatatOleh?->name }}</p>
-                            @endif
                         </div>
                     @empty
                         <p class="px-4 py-10 text-center text-sm text-gray-500">Tidak ada data{{ $tahunIniBerjalan ? '' : ' di arsip ' . $tahun }}.</p>
@@ -117,33 +137,50 @@
                                 <th class="px-4 py-3 text-center font-semibold">Hapus</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-300">
-                            @forelse ($riwayat as $item)
-                                <tr class="hover:bg-gray-50">
+                        @forelse ($riwayat as $grup)
+                            <tbody x-data="{ open: false }" class="divide-y divide-gray-300 border-t border-gray-300">
+                                <tr class="hover:bg-gray-50 cursor-pointer" @click="open = ! open">
                                     <td class="px-4 py-3">
-                                        <p class="font-medium text-gray-800">{{ $item->user->name }}</p>
-                                        <p class="text-[11px] text-gray-400 font-mono">{{ $item->user->nip_formatted }}</p>
+                                        <div class="flex items-center gap-2">
+                                            <x-ikon nama="panah-bawah" kelas="w-3.5 h-3.5 text-gray-400 transition-transform duration-150 shrink-0"
+                                                    x-bind:class="{ 'rotate-180': open }" />
+                                            <div class="min-w-0">
+                                                <p class="font-medium text-gray-800">{{ $grup['user']->name ?? 'Pegawai tidak diketahui' }}</p>
+                                                <p class="text-[11px] text-gray-400 font-mono">{{ $grup['user']->nip_formatted ?? '—' }}</p>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td class="px-4 py-3 text-gray-700">{{ $item->jenis_label }}</td>
-                                    <td class="px-4 py-3 text-gray-700">{{ $item->nomor_spt ?? '—' }}</td>
-                                    <td class="px-4 py-3 whitespace-nowrap text-gray-700">{{ $item->tanggal_mulai->translatedFormat('d M Y') }}</td>
-                                    <td class="px-4 py-3 whitespace-nowrap text-gray-700">{{ $item->tanggal_selesai->translatedFormat('d M Y') }}</td>
-                                    <td class="px-4 py-3 text-center whitespace-nowrap">{{ $item->lama_hari }} hari</td>
-                                    <td class="px-4 py-3 text-gray-700">{{ $item->dicatatOleh?->name ?? '—' }}</td>
-                                    <td class="px-4 py-3 text-center">
-                                        <form method="POST" action="{{ route('events.destroy', $item) }}"
-                                              onsubmit="return confirm('Hapus kegiatan ini?')">
-                                            @csrf @method('DELETE')
-                                            <button class="p-1 text-gray-300 hover:text-rose-500" title="Hapus kegiatan">
-                                                <x-ikon nama="silang" kelas="w-4 h-4" />
-                                            </button>
-                                        </form>
+                                    <td class="px-4 py-3 text-gray-500" colspan="6">
+                                        {{ $grup['jumlah_kegiatan'] }} kegiatan &middot; {{ $grup['total_hari'] }} hari
                                     </td>
+                                    <td class="px-4 py-3"></td>
                                 </tr>
-                            @empty
+                                @foreach ($grup['kegiatan'] as $item)
+                                    <tr x-show="open" x-cloak class="bg-gray-50">
+                                        <td class="px-4 py-2"></td>
+                                        <td class="px-4 py-2 text-gray-700">{{ $item->jenis_label }}</td>
+                                        <td class="px-4 py-2 text-gray-700">{{ $item->nomor_spt ?? '—' }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ $item->tanggal_mulai->translatedFormat('d M Y') }}</td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-gray-700">{{ $item->tanggal_selesai->translatedFormat('d M Y') }}</td>
+                                        <td class="px-4 py-2 text-center whitespace-nowrap">{{ $item->lama_hari }} hari</td>
+                                        <td class="px-4 py-2 text-gray-700">{{ $item->dicatatOleh?->name ?? '—' }}</td>
+                                        <td class="px-4 py-2 text-center">
+                                            <form method="POST" action="{{ route('events.destroy', $item) }}"
+                                                  onsubmit="return confirm('Hapus kegiatan ini?')">
+                                                @csrf @method('DELETE')
+                                                <button class="p-1 text-gray-300 hover:text-rose-500" title="Hapus kegiatan">
+                                                    <x-ikon nama="silang" kelas="w-4 h-4" />
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        @empty
+                            <tbody>
                                 <tr><td colspan="8" class="px-4 py-10 text-center text-sm text-gray-500">Tidak ada data{{ $tahunIniBerjalan ? '' : ' di arsip ' . $tahun }}.</td></tr>
-                            @endforelse
-                        </tbody>
+                            </tbody>
+                        @endforelse
                     </table>
                 </div>
 
