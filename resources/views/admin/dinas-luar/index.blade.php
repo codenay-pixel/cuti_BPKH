@@ -97,8 +97,8 @@
                                                 <form method="POST" action="{{ route('events.destroy', $item) }}"
                                                       onsubmit="return confirm('Hapus kegiatan ini?')">
                                                     @csrf @method('DELETE')
-                                                    <button class="p-1 text-gray-300 hover:text-rose-500" title="Hapus kegiatan">
-                                                        <x-ikon nama="silang" kelas="w-4 h-4" />
+                                                    <button class="px-2.5 py-1 rounded-md text-[11px] font-semibold text-rose-600 border border-rose-200 hover:bg-rose-50">
+                                                        HAPUS
                                                     </button>
                                                 </form>
                                             </div>
@@ -168,8 +168,8 @@
                                             <form method="POST" action="{{ route('events.destroy', $item) }}"
                                                   onsubmit="return confirm('Hapus kegiatan ini?')">
                                                 @csrf @method('DELETE')
-                                                <button class="p-1 text-gray-300 hover:text-rose-500" title="Hapus kegiatan">
-                                                    <x-ikon nama="silang" kelas="w-4 h-4" />
+                                                <button class="px-2.5 py-1 rounded-md text-[11px] font-semibold text-rose-600 border border-rose-200 hover:bg-rose-50">
+                                                    HAPUS
                                                 </button>
                                             </form>
                                         </td>
