@@ -31,8 +31,9 @@ class LeaveReportExport implements FromCollection, WithHeadings, WithMapping
         }
 
         if ($this->nama) {
-            $query->whereHas('user', function ($q) {
-                $q->where('name', 'like', '%' . $this->nama . '%');
+            $nama = mb_strtolower(trim($this->nama));
+            $query->whereHas('user', function ($q) use ($nama) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%{$nama}%"]);
             });
         }
 

@@ -18,6 +18,11 @@ class LeaveReportController extends Controller
     {
     }
 
+    /**
+     * Hapus satu pengajuan cuti beserta jejak persetujuan dan lampirannya.
+     * Bila pengajuan sudah disetujui, saldo cuti tahunan yang terpotong
+     * dikembalikan lebih dulu agar hitungannya tidak melenceng.
+     */
     public function destroy(LeaveRequest $leaveRequest)
     {
         $nama = $leaveRequest->user->name;
@@ -45,6 +50,11 @@ class LeaveReportController extends Controller
         return back()->with('success', $pesan);
     }
 
+    /**
+     * Tahun-tahun yang punya data pengajuan cuti, terbaru lebih dulu.
+     * Tahun berjalan selalu disertakan walau belum ada datanya, supaya
+     * dropdown filter tidak pernah kosong di awal tahun.
+     */
     protected function tahunTersedia(): array
     {
         return LeaveRequest::selectRaw('DISTINCT EXTRACT(YEAR FROM tanggal_mulai) as tahun')
@@ -70,8 +80,9 @@ class LeaveReportController extends Controller
         }
 
         if ($request->filled('nama')) {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->nama . '%');
+            $nama = mb_strtolower(trim($request->nama));
+            $query->whereHas('user', function ($q) use ($nama) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%{$nama}%"]);
             });
         }
 
@@ -112,8 +123,9 @@ class LeaveReportController extends Controller
         }
 
         if ($request->filled('nama')) {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->nama . '%');
+            $nama = mb_strtolower(trim($request->nama));
+            $query->whereHas('user', function ($q) use ($nama) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%{$nama}%"]);
             });
         }
 

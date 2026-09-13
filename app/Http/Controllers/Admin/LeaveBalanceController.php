@@ -15,6 +15,10 @@ class LeaveBalanceController extends Controller
     {
     }
 
+    /**
+     * Satu pegawai = satu baris, berisi tahun berjalan dan dua tahun terakhir
+     * sekaligus. Lebih ringkas daripada satu baris per tahun.
+     */
     public function index(Request $request)
     {
 
@@ -24,10 +28,18 @@ class LeaveBalanceController extends Controller
         $query = User::orderBy('name');
 
         if ($request->filled('cari')) {
-            $cari = $request->cari;
-            $query->where(fn ($q) => $q
-                ->where('name', 'like', "%{$cari}%")
-                ->orWhere('nip', 'like', "%{$cari}%"));
+            $cari = trim($request->cari);
+            $angka = preg_replace('/[^0-9]/', '', $cari);
+            $cariLower = mb_strtolower($cari);
+
+            $query->where(function ($q) use ($cariLower, $cari, $angka) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%{$cariLower}%"])
+                  ->orWhere('nip', 'like', "%{$cari}%");
+
+                if ($angka !== '') {
+                    $q->orWhere('nip', 'like', "%{$angka}%");
+                }
+            });
         }
 
         $users = $query->paginate(20)->withQueryString();
@@ -54,6 +66,7 @@ class LeaveBalanceController extends Controller
         return view('admin.leave-balances.index', compact('baris', 'users', 'tahun'));
     }
 
+    /** Form pengaturan tiga tahun sekaligus untuk satu pegawai. */
     public function edit(User $user)
     {
         $tahun = now()->year;
@@ -117,6 +130,10 @@ class LeaveBalanceController extends Controller
             ->with('success', 'Saldo cuti ' . $user->name . ' berhasil diperbarui.');
     }
 
+    /**
+     * Susun tiga tahun (N-2, N-1, N) beserta berapa hari yang benar-benar
+     * boleh dipakai pada tahun berjalan.
+     */
     private function ringkas(User $u, $saldoUser, int $tahun): array
     {
         $rows = collect($saldoUser)->keyBy('tahun');
