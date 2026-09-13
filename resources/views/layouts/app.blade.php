@@ -15,7 +15,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-50">
+        <div class="min-h-screen bg-gray-50 flex flex-col">
             @include('layouts.navigation')
 
             @isset($header)
@@ -26,7 +26,7 @@
                 </header>
             @endisset
 
-            <main>
+            <main class="flex-1">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
                     @if (session('success'))
                         <div class="mb-4 flex items-start gap-2.5 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-sm">
