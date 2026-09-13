@@ -89,6 +89,25 @@ class LeaveBalanceController extends Controller
         $jenis = $this->leaveService->jenisTahunan();
         abort_if(! $jenis, 404);
 
+        // Normalisasi dulu sebelum divalidasi -- input angka dari keyboard/browser
+        // tertentu (mis. koma sebagai desimal, atau spasi tak sengaja ikut ter-input)
+        // bisa lolos dari <input type="number"> tapi ditolak validasi "integer".
+        $request->merge([
+            'tahun' => collect($request->input('tahun', []))->map(fn ($nilai) => [
+                'jatah'    => $this->bulatkanAngka($nilai['jatah'] ?? null),
+                'terpakai' => $this->bulatkanAngka($nilai['terpakai'] ?? null),
+            ])->all(),
+        ]);
+
+        // Nama atribut per tahun (dibangun dari input yang benar-benar ada),
+        // supaya pesan error menyebut "Jatah tahun 2024", bukan bocorin nama
+        // field mentah semacam "tahun.2024.jatah".
+        $atribut = [];
+        foreach (array_keys($request->input('tahun', [])) as $th) {
+            $atribut["tahun.{$th}.jatah"] = "jatah tahun {$th}";
+            $atribut["tahun.{$th}.terpakai"] = "terpakai tahun {$th}";
+        }
+
         $data = $request->validate([
             'tahun'              => ['required', 'array'],
             'tahun.*.jatah'      => ['required', 'integer', 'min:0', 'max:60'],
@@ -96,7 +115,13 @@ class LeaveBalanceController extends Controller
         ], [
             'tahun.*.jatah.required'    => 'Jatah wajib diisi.',
             'tahun.*.terpakai.required' => 'Terpakai wajib diisi.',
-        ]);
+            'tahun.*.jatah.integer'     => 'Isian :attribute harus berupa angka bulat (tanpa desimal).',
+            'tahun.*.terpakai.integer'  => 'Isian :attribute harus berupa angka bulat (tanpa desimal).',
+            'tahun.*.jatah.min'         => 'Isian :attribute tidak boleh kurang dari 0.',
+            'tahun.*.terpakai.min'      => 'Isian :attribute tidak boleh kurang dari 0.',
+            'tahun.*.jatah.max'         => 'Isian :attribute tidak boleh lebih dari 60.',
+            'tahun.*.terpakai.max'      => 'Isian :attribute tidak boleh lebih dari 60.',
+        ], $atribut);
 
         $batasBawah = now()->year - LeaveService::TAHUN_AKUMULASI;
         $batasAtas  = now()->year;
@@ -128,6 +153,28 @@ class LeaveBalanceController extends Controller
         return redirect()
             ->route('admin.leave-balances.index')
             ->with('success', 'Saldo cuti ' . $user->name . ' berhasil diperbarui.');
+    }
+
+    /**
+     * Terima input angka apa adanya dari form (bisa berupa string dengan spasi,
+     * koma sebagai desimal seperti "12,0", atau titik seperti "12.0") dan
+     * bulatkan jadi integer bersih. Mengembalikan null kalau memang bukan angka,
+     * supaya aturan "required"/"integer" di validator tetap menampilkan pesan
+     * yang sesuai daripada diam-diam meloloskan input yang salah.
+     */
+    private function bulatkanAngka(mixed $nilai): int|string|null
+    {
+        if ($nilai === null || $nilai === '') {
+            return null;
+        }
+
+        $bersih = str_replace(',', '.', trim((string) $nilai));
+
+        if (! is_numeric($bersih)) {
+            return $nilai;
+        }
+
+        return (int) round((float) $bersih);
     }
 
     /**
